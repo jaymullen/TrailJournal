@@ -4,9 +4,13 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="@string/hello"
-    />
+    <Button android:id="@+id/btn_login"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/label_login"
+            android:onClick="startAuth"/>
+    <ListView android:id="@+id/list_notes"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              />
 </LinearLayout>

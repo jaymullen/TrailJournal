@@ -22,6 +22,11 @@
     </dependency>
 
     <dependency>
+       <groupId>com.google.android</groupId>
+       <artifactId>annotations</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>com.actionbarsherlock</groupId>
       <artifactId>actionbarsherlock</artifactId>
       <version>4.2.0</version>
@@ -29,8 +34,10 @@
     </dependency>
 
     <dependency>
-      <groupId>de.akquinet.android.androlog</groupId>
-      <artifactId>androlog</artifactId>
+      <groupId>com.evernote</groupId>
+      <artifactId>android-sdk</artifactId>
+      <version>1.0.2</version>
+      <type>apklib</type>
     </dependency>
   </dependencies>
   <build>
@@ -44,7 +51,7 @@
           <resourceDirectory>${project.basedir}/res</resourceDirectory>
           <nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
           <sdk>
-            <platform>10</platform>
+            <platform>17</platform>
           </sdk>
           <undeployBeforeDeploy>true</undeployBeforeDeploy>
         </configuration>

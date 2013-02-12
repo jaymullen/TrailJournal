@@ -2,4 +2,11 @@
 <resources>
     <string name="hello">Hello trail-journal!</string>
     <string name="app_name">trail-journal</string>
+    <string name="menu_add">Add Entry</string>
+    <string name="label_login">Evernote Login</string>
+    <string name="label_logout">Evernote Logout</string>
+    <string name="label_loading">Loading...</string>
+
+    <string name="error_fetching_notes">Could not fetch notes</string>
+    <string name="error_fetching_notes">Could not fetch notes</string>
 </resources>

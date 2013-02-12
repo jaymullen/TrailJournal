@@ -14,8 +14,7 @@
     </modules>
 
     <properties>
-        <platform.version> 2.3.3
-            </platform.version>
+        <android.version> 4.1.1.4</android.version>
     </properties>
 
     <dependencyManagement>
@@ -23,21 +22,20 @@
             <dependency>
                 <groupId>com.google.android</groupId>
                 <artifactId>android</artifactId>
-                <version>${platform.version}</version>
+                <version>${android.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.google.android</groupId>
                 <artifactId>android-test</artifactId>
-                <version>${platform.version}</version>
+                <version>${android.version}</version>
                 <scope>provided</scope>
             </dependency>
 
-            <!-- Androlog is a logging and reporting library for Android -->
             <dependency>
-                <groupId>de.akquinet.android.androlog</groupId>
-                <artifactId>androlog</artifactId>
-                <version>1.0.5</version>
+                <groupId>com.google.android</groupId>
+                <artifactId>annotations</artifactId>
+                <version>4.1.1.4</version>
             </dependency>
 
             <dependency>
