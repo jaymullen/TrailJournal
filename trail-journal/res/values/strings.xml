@@ -6,6 +6,11 @@
     <string name="label_login">Evernote Login</string>
     <string name="label_logout">Evernote Logout</string>
     <string name="label_loading">Loading...</string>
+    <string name="username">Username:</string>
+    <string name="password">Password:</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="remember_me">Rember Me Please</string>
 
     <string name="error_fetching_notes">Could not fetch notes</string>
     <string name="error_fetching_notes">Could not fetch notes</string>

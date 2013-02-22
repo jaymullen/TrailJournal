@@ -8,7 +8,7 @@
   <uses-permission android:name="android.permission.INTERNET" />
 
   <application android:icon="@drawable/icon" android:label="@string/app_name" android:theme="@style/Theme.Sherlock.Light.DarkActionBar">
-    <activity android:name=".EvernoteActivity">
+    <activity android:name=".HomeActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
@@ -17,7 +17,13 @@
 
       <activity
               android:name="com.evernote.client.oauth.android.EvernoteOAuthActivity" />
-      <activity android:name=".NotebookActivity"/>
+      <activity android:name=".HomeActivity" android:label="HomeActivity">
+          <intent-filter>
+              <action android:name="android.intent.action.MAIN"/>
+              <category android:name="android.intent.category.LAUNCHER"/>
+          </intent-filter>
+      </activity>
+      <activity android:name=".LoginActivity"/>
   </application>
 
 </manifest>
