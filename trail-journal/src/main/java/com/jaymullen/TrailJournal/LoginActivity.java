@@ -91,7 +91,7 @@ public class LoginActivity extends Activity {
             HttpClient httpclient = new DefaultHttpClient(httpParams);
 
             StringBuilder url = new StringBuilder("http://www.trailjournals.com/login/welcome.cfm?now=");
-            url.append(getNowString());
+            url.append(Utils.getNowString(true));
 
             try {
                 // Add your data
@@ -184,16 +184,6 @@ public class LoginActivity extends Activity {
             int end   = html.indexOf("&", start);
 
             return html.substring(start + idPrefix.length(), end);
-        }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        private String getNowString(){
-
-            try{
-                return URLEncoder.encode("{ts '" + sdf.format(new Date()) + "'}", "UTF-8");
-            } catch(UnsupportedEncodingException e){
-
-            }
-            return "";
         }
     }
 }

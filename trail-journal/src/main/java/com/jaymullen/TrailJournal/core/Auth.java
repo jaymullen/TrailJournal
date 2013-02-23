@@ -23,6 +23,7 @@ public class Auth {
     private String mCftoken;
     private String mJournalId;
 
+    public static final String BASE_URL = "http://www.trailjournals.com/";
     public static final String CFID = "CFID";
     public static final String CFTOKEN = "CFTOKEN";
     public static final String JOURNAL_ID = "JOURNAL_ID";
@@ -57,7 +58,7 @@ public class Auth {
         Log.d("Auth", "response journalId: " + id);
         if(id != null){
             SharedPreferences.Editor edit = mPrefs.edit();
-            edit.putString(JOURNAL_ID, mJournalId);
+            edit.putString(JOURNAL_ID, id);
             edit.commit();
 
             mJournalId = id;
@@ -82,6 +83,9 @@ public class Auth {
         edit.commit();
     }
 
+    public String getTokenStringForUrl(){
+        return mCfid + "&" + mCftoken;
+    }
     public String getCfid(){
         return mCfid;
     }
@@ -91,7 +95,6 @@ public class Auth {
     }
 
     public void setCfid(String value){
-        Log.d("Auth", "response cfid: " + value);
         if(value != null){
             SharedPreferences.Editor edit = mPrefs.edit();
             edit.putString(CFID, value);
@@ -101,7 +104,6 @@ public class Auth {
     }
 
     public void setCftoken(String value){
-        Log.d("Auth", "response ararhghagrhg ahrg ahrg cftoken: " + value);
         if(value != null){
             SharedPreferences.Editor edit = mPrefs.edit();
             edit.putString(CFTOKEN, value);

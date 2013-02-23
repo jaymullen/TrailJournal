@@ -15,6 +15,7 @@
       </intent-filter>
     </activity>
 
+      <activity android:name=".EntryActivity" />
       <activity
               android:name="com.evernote.client.oauth.android.EvernoteOAuthActivity" />
       <activity android:name=".HomeActivity" android:label="HomeActivity">

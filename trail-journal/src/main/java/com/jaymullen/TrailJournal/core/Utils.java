@@ -3,6 +3,11 @@ package com.jaymullen.TrailJournal.core;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jaymullen
@@ -36,5 +41,18 @@ public class Utils {
         httpget.setHeader("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.3");
 
         return httpget;
+    }
+
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static String getNowString(boolean encode){
+        String date = "{ts '" + sdf.format(new Date()) + "'}";
+        if(encode){
+            try{
+                return URLEncoder.encode(date, "UTF-8");
+            } catch(UnsupportedEncodingException e){
+
+            }
+        }
+        return date;
     }
 }

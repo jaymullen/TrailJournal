@@ -55,6 +55,10 @@ public class BaseActivity extends DialogFragmentActivity implements DialogResult
         else if(item.getItemId() == R.id.logout){
             new LogoutTask(this).execute();
         }
+        else if(item.getItemId() == R.id.add_post){
+            Intent addIntent = new Intent(this, EntryActivity.class);
+            startActivity(addIntent);
+        }
         return false;
     }
 
