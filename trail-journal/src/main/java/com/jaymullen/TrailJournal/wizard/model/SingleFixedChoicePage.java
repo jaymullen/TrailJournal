@@ -22,6 +22,7 @@ import com.jaymullen.TrailJournal.wizard.ui.SingleChoiceFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * A page offering the user a number of mutually exclusive choices.
@@ -29,8 +30,11 @@ import java.util.Arrays;
 public class SingleFixedChoicePage extends Page {
     protected ArrayList<String> mChoices = new ArrayList<String>();
 
-    public SingleFixedChoicePage(ModelCallbacks callbacks, String title) {
+    private String mFormKey;
+
+    public SingleFixedChoicePage(ModelCallbacks callbacks, String title, String formKey) {
         super(callbacks, title);
+        mFormKey = formKey;
     }
 
     @Override
@@ -49,6 +53,11 @@ public class SingleFixedChoicePage extends Page {
     @Override
     public void getReviewItems(ArrayList<ReviewItem> dest) {
         dest.add(new ReviewItem(getTitle(), mData.getString(SIMPLE_DATA_KEY), getKey()));
+    }
+
+    @Override
+    public void getReviewItemsForForm(HashMap<String, String> dest) {
+        dest.put(mFormKey, mData.getString(SIMPLE_DATA_KEY));
     }
 
     @Override

@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Represents a single page in the wizard.
@@ -78,6 +79,8 @@ public abstract class Page implements PageTreeNode {
     }
 
     public abstract void getReviewItems(ArrayList<ReviewItem> dest);
+
+    public abstract void getReviewItemsForForm(HashMap<String, String> dest);
 
     public boolean isCompleted() {
         return true;

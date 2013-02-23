@@ -18,16 +18,18 @@ package com.jaymullen.TrailJournal.wizard.model;
 
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import com.jaymullen.TrailJournal.provider.JournalContract;
 import com.jaymullen.TrailJournal.wizard.ui.LocationFragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
- * A page asking for a name and an email.
+ * A page asking for a starting and ending location
  */
 public class LocationPage extends Page {
-    public static final String DESTINATION_DATA_KEY = "destination";
-    public static final String START_DATA_KEY = "start";
+    public static final String DESTINATION_DATA_KEY = JournalContract.JournalEntries.END_DEST;
+    public static final String START_DATA_KEY = JournalContract.JournalEntries.START_DEST;
 
     public LocationPage(ModelCallbacks callbacks, String title) {
         super(callbacks, title);
@@ -40,8 +42,14 @@ public class LocationPage extends Page {
 
     @Override
     public void getReviewItems(ArrayList<ReviewItem> dest) {
-        dest.add(new ReviewItem("Your name", mData.getString(DESTINATION_DATA_KEY), getKey(), -1));
-        dest.add(new ReviewItem("Your email", mData.getString(START_DATA_KEY), getKey(), -1));
+        dest.add(new ReviewItem("Destination", mData.getString(DESTINATION_DATA_KEY), getKey(), -1));
+        dest.add(new ReviewItem("Starting Location", mData.getString(START_DATA_KEY), getKey(), -1));
+    }
+
+    @Override
+    public void getReviewItemsForForm(HashMap<String, String> dest) {
+        dest.put(DESTINATION_DATA_KEY, mData.getString(DESTINATION_DATA_KEY));
+        dest.put(START_DATA_KEY, mData.getString(START_DATA_KEY));
     }
 
     @Override

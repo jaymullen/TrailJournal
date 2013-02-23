@@ -18,18 +18,24 @@ package com.jaymullen.TrailJournal.wizard.model;
 
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import com.jaymullen.TrailJournal.provider.JournalContract;
 import com.jaymullen.TrailJournal.wizard.ui.TitleFragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A page asking for a name and an email.
  */
 public class TitlePage extends Page {
-    public static final String TITLE_DATA_KEY = "title";
+    /* This may be a strange name but it corresponds to form fields on the site.  DO NOT CHANGE */
+    public static final String TITLE_DATA_KEY = JournalContract.JournalEntries.TITLE;
+
+    private String mTitle;
 
     public TitlePage(ModelCallbacks callbacks, String title) {
         super(callbacks, title);
+        mTitle = title;
     }
 
     @Override
@@ -39,7 +45,12 @@ public class TitlePage extends Page {
 
     @Override
     public void getReviewItems(ArrayList<ReviewItem> dest) {
-        dest.add(new ReviewItem("Entry Title", mData.getString(TITLE_DATA_KEY), getKey(), -1));
+        dest.add(new ReviewItem(mTitle, mData.getString(TITLE_DATA_KEY), getKey(), -1));
+    }
+
+    @Override
+    public void getReviewItemsForForm(HashMap<String, String> dest) {
+        dest.put(TITLE_DATA_KEY, mData.getString(TITLE_DATA_KEY));
     }
 
     @Override

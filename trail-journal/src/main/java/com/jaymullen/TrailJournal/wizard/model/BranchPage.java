@@ -30,8 +30,8 @@ import java.util.List;
 public class BranchPage extends SingleFixedChoicePage {
     private List<Branch> mBranches = new ArrayList<Branch>();
 
-    public BranchPage(ModelCallbacks callbacks, String title) {
-        super(callbacks, title);
+    public BranchPage(ModelCallbacks callbacks, String title, String formKey) {
+        super(callbacks, title, formKey);
     }
 
     @Override

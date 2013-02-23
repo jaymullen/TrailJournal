@@ -28,9 +28,9 @@
             android:orientation="vertical">
 
             <TextView style="@style/WizardFormLabel"
-                android:text="@string/label_your_name" />
+                android:text="@string/label_start" />
 
-            <EditText android:id="@+id/your_name"
+            <EditText android:id="@+id/start_location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:saveEnabled="false"
@@ -39,9 +39,9 @@
                 android:layout_marginBottom="16dp" />
 
             <TextView style="@style/WizardFormLabel"
-                android:text="@string/label_your_email" />
+                android:text="@string/label_end" />
 
-            <EditText android:id="@+id/your_email"
+            <EditText android:id="@+id/end_location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:saveEnabled="false"

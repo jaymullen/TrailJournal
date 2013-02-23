@@ -2,9 +2,11 @@ package com.jaymullen.TrailJournal.wizard.model;
 
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import com.jaymullen.TrailJournal.provider.JournalContract;
 import com.jaymullen.TrailJournal.wizard.ui.DateFragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,7 +17,7 @@ import java.util.ArrayList;
  */
 public class DatePage extends Page {
 
-    public static final String DATE_DATA_KEY = "date";
+    public static final String DATE_DATA_KEY = JournalContract.JournalEntries.DATE;
 
     public DatePage(ModelCallbacks callbacks, String title) {
         super(callbacks, title);
@@ -29,6 +31,11 @@ public class DatePage extends Page {
     @Override
     public void getReviewItems(ArrayList<ReviewItem> dest) {
         dest.add(new ReviewItem("Entry Date", mData.getString(DATE_DATA_KEY), getKey(), -1));
+    }
+
+    @Override
+    public void getReviewItemsForForm(HashMap<String, String> dest) {
+        dest.put(DATE_DATA_KEY, mData.getString(DATE_DATA_KEY));
     }
 
     @Override

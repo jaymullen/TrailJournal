@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +11,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import com.jaymullen.TrailJournal.R;
-import com.jaymullen.TrailJournal.wizard.model.CustomerInfoPage;
 import com.jaymullen.TrailJournal.wizard.model.DatePage;
 
 import java.util.Calendar;
@@ -57,7 +54,7 @@ public class DateFragment extends Fragment {
     DatePicker.OnDateChangedListener mDateListener = new DatePicker.OnDateChangedListener() {
         @Override
         public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            String date = monthOfYear + "/" + dayOfMonth + "/" + year;
+            String date = (monthOfYear+1) + "/" + dayOfMonth + "/" + year;
             mPage.getData().putString(DatePage.DATE_DATA_KEY, date);
             mPage.notifyDataChanged();
         }
@@ -77,7 +74,10 @@ public class DateFragment extends Fragment {
 
         mDateView = ((DatePicker) rootView.findViewById(R.id.entry_date));
         mDateView.init(year, month, day, mDateListener);
-        //mDateView.setText(mPage.getData().getString(CustomerInfoPage.NAME_DATA_KEY));
+
+        String date = (month+1) + "/" + day + "/" + year;
+        mPage.getData().putString(DatePage.DATE_DATA_KEY, date);
+        mPage.notifyDataChanged();
 
         return rootView;
     }

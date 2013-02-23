@@ -17,6 +17,7 @@
 package com.jaymullen.TrailJournal;
 
 import android.content.Context;
+import com.jaymullen.TrailJournal.provider.JournalContract;
 import com.jaymullen.TrailJournal.wizard.model.*;
 
 public class EntryWizardModel extends AbstractWizardModel {
@@ -27,51 +28,43 @@ public class EntryWizardModel extends AbstractWizardModel {
     @Override
     protected PageList onNewRootPageList() {
         return new PageList(
-                new BranchPage(this, "Post type")
+                new BranchPage(this, "Post type", JournalContract.JournalEntries.TYPE)
                         .addBranch("Prep",
-                                new DatePage(this, "Entry Date")
-                                        .setRequired(true),
+                                new DatePage(this, "Entry Date"),
 
-                                new TitlePage(this, "Entry Title")
-                                        .setRequired(true),
+                                new TitlePage(this, "Entry Title"),
 
 //                                new PhotoPage(this, "Veggies")
 //                                        .setChoices("Tomatoes", "Lettuce", "Onions", "Pickles",
 //                                                "Cucumbers", "Peppers"),
 
-                                new SingleFixedChoicePage(this, "Display in Journal")
+                                new SingleFixedChoicePage(this, "Display in Journal", JournalContract.JournalEntries.DISPLAY_IN_JOURNAL)
                                         .setChoices("Yes", "No")
-                                        .setValue("Yes")
-                                        .setRequired(true),
+                                        .setValue("Yes"),
 
                                 new BodyPage(this, "Entry Text")
-                                        .setRequired(true))
-
+                        )
                         .addBranch("Trail",
-                                new DatePage(this, "Entry Date")
-                                        .setRequired(true),
+                                new DatePage(this, "Entry Date"),
 
-                                new LocationPage(this, "Location")
-                                        .setRequired(true),
+                                new LocationPage(this, "Location"),
 
-                                new SingleFixedChoicePage(this, "Sleeping Location")
+                                new SingleFixedChoicePage(this, "Sleeping Location", JournalContract.JournalEntries.SLEEP_LOCATION)
                                         .setChoices("Tent", "Shelter", "Hammock",
                                                 "Under Stars", "Hotel", "Hostel", "House")
                                         .setValue("Shelter"),
 
-                                new TitlePage(this, "Daily Miles")
-                                        .setRequired(true),
+                                new TitlePage(this, "Daily Miles"),
 
 //                                new PhotoPage(this, "Veggies")
 //                                        .setChoices("Tomatoes", "Lettuce", "Onions", "Pickles",
 //                                                "Cucumbers", "Peppers"),
 
-                                new SingleFixedChoicePage(this, "Display in Journal")
+                                new SingleFixedChoicePage(this, "Display in Journal", JournalContract.JournalEntries.DISPLAY_IN_JOURNAL)
                                         .setChoices("Yes", "No")
-                                        .setRequired(true),
+                                        .setValue("Yes"),
 
-                                new BodyPage(this, "Entry Text")
-                                        .setRequired(true))
+                                new BodyPage(this, "Entry Text"))
                         );
     }
 }

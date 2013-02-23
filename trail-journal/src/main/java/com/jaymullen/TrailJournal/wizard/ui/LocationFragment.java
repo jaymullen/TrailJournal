@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import com.jaymullen.TrailJournal.R;
-import com.jaymullen.TrailJournal.wizard.model.CustomerInfoPage;
 import com.jaymullen.TrailJournal.wizard.model.LocationPage;
 
 public class LocationFragment extends Fragment {
@@ -49,8 +48,7 @@ public class LocationFragment extends Fragment {
         return fragment;
     }
 
-    public LocationFragment() {
-    }
+    public LocationFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,14 +62,14 @@ public class LocationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_page_customer_info, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_page_location, container, false);
         ((TextView) rootView.findViewById(android.R.id.title)).setText(mPage.getTitle());
 
-        mNameView = ((TextView) rootView.findViewById(R.id.your_name));
-        mNameView.setText(mPage.getData().getString(CustomerInfoPage.NAME_DATA_KEY));
+        mNameView = ((TextView) rootView.findViewById(R.id.start_location));
+        mNameView.setText(mPage.getData().getString(LocationPage.START_DATA_KEY));
 
-        mEmailView = ((TextView) rootView.findViewById(R.id.your_email));
-        mEmailView.setText(mPage.getData().getString(CustomerInfoPage.EMAIL_DATA_KEY));
+        mEmailView = ((TextView) rootView.findViewById(R.id.end_location));
+        mEmailView.setText(mPage.getData().getString(LocationPage.DESTINATION_DATA_KEY));
         return rootView;
     }
 

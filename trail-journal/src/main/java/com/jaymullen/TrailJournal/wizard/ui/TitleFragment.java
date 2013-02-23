@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import com.jaymullen.TrailJournal.R;
-import com.jaymullen.TrailJournal.wizard.model.CustomerInfoPage;
 import com.jaymullen.TrailJournal.wizard.model.TitlePage;
 
 public class TitleFragment extends Fragment {

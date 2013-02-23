@@ -1,5 +1,7 @@
 package com.jaymullen.TrailJournal.core;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 
@@ -54,5 +56,13 @@ public class Utils {
             }
         }
         return date;
+    }
+
+    public static boolean isOnline(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return (cm.getActiveNetworkInfo() != null)
+                && cm.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 }

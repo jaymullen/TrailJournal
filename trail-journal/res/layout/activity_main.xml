@@ -66,6 +66,15 @@
             android:layout_height="wrap_content"
             android:text="@string/next" />
 
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:background="@drawable/selectable_item_background"
+            android:id="@+id/save_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/save" />
     </LinearLayout>
 
 </LinearLayout>

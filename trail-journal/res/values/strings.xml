@@ -14,16 +14,20 @@
     <string name="logout">Logout</string>
     <string name="remember_me">Rember Me Please</string>
 
+    <string name="save_draft">Save Draft</string>
     <string name="error_fetching_notes">Could not fetch notes</string>
     <string name="error_fetching_notes">Could not fetch notes</string>
 
 
     <string name="next">Next</string>
     <string name="prev">Previous</string>
-    <string name="finish">Submit order</string>
+    <string name="publish">Publish</string>
+    <string name="save">Save</string>
     <string name="review">Review</string>
 
     <string name="label_entry_title">Entry Title</string>
+    <string name="label_start">Starting Location</string>
+    <string name="label_end">Ending Location</string>
     <string name="label_your_name">Name</string>
     <string name="label_your_email">Email</string>
     <string name="hint_your_name">e.g. Larry</string>

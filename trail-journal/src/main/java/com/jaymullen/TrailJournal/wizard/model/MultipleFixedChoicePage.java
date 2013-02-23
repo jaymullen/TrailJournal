@@ -20,13 +20,14 @@ import android.support.v4.app.Fragment;
 import com.jaymullen.TrailJournal.wizard.ui.MultipleChoiceFragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A page offering the user a number of non-mutually exclusive choices.
  */
 public class MultipleFixedChoicePage extends SingleFixedChoicePage {
-    public MultipleFixedChoicePage(ModelCallbacks callbacks, String title) {
-        super(callbacks, title);
+    public MultipleFixedChoicePage(ModelCallbacks callbacks, String title, String formKey) {
+        super(callbacks, title, formKey);
     }
 
     @Override
@@ -51,6 +52,10 @@ public class MultipleFixedChoicePage extends SingleFixedChoicePage {
         dest.add(new ReviewItem(getTitle(), sb.toString(), getKey()));
     }
 
+    @Override
+    public void getReviewItemsForForm(HashMap<String, String> dest) {
+        //dest.put(TITLE_DATA_KEY, mData.getString(TITLE_DATA_KEY));
+    }
     @Override
     public boolean isCompleted() {
         ArrayList<String> selections = mData.getStringArrayList(Page.SIMPLE_DATA_KEY);

@@ -18,15 +18,17 @@ package com.jaymullen.TrailJournal.wizard.model;
 
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import com.jaymullen.TrailJournal.provider.JournalContract;
 import com.jaymullen.TrailJournal.wizard.ui.BodyFragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A page asking for a name and an email.
  */
 public class BodyPage extends Page {
-    public static final String BODY_DATA_KEY = "body";
+    public static final String BODY_DATA_KEY = JournalContract.JournalEntries.ENTRY_TEXT;
 
     public BodyPage(ModelCallbacks callbacks, String title) {
         super(callbacks, title);
@@ -39,7 +41,12 @@ public class BodyPage extends Page {
 
     @Override
     public void getReviewItems(ArrayList<ReviewItem> dest) {
-        dest.add(new ReviewItem("Entry Title", mData.getString(BODY_DATA_KEY), getKey(), -1));
+        dest.add(new ReviewItem("Entry Text", mData.getString(BODY_DATA_KEY), getKey(), -1));
+    }
+
+    @Override
+    public void getReviewItemsForForm(HashMap<String, String> dest) {
+        dest.put(BODY_DATA_KEY, mData.getString(BODY_DATA_KEY));
     }
 
     @Override
