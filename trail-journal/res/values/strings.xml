@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Hello trail-journal!</string>
-    <string name="app_name">trail-journal</string>
+    <string name="app_name">Trail Journal</string>
     <string name="menu_add">Add Entry</string>
     <string name="label_login">Evernote Login</string>
     <string name="label_logout">Evernote Logout</string>

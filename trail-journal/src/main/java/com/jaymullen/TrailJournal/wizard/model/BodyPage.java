@@ -28,7 +28,7 @@ import java.util.HashMap;
  * A page asking for a name and an email.
  */
 public class BodyPage extends Page {
-    public static final String BODY_DATA_KEY = JournalContract.JournalEntries.ENTRY_TEXT;
+    public static final String BODY_DATA_KEY = JournalContract.JournalEntry.ENTRY_TEXT;
 
     public BodyPage(ModelCallbacks callbacks, String title) {
         super(callbacks, title);
@@ -52,5 +52,9 @@ public class BodyPage extends Page {
     @Override
     public boolean isCompleted() {
         return !TextUtils.isEmpty(mData.getString(BODY_DATA_KEY));
+    }
+
+    public void setValue(String value){
+        mData.putString(BODY_DATA_KEY, value);
     }
 }

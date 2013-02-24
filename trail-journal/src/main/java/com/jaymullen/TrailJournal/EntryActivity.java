@@ -20,6 +20,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -39,14 +41,16 @@ import com.actionbarsherlock.view.MenuItem;
 import com.jaymullen.TrailJournal.core.Auth;
 import com.jaymullen.TrailJournal.core.Utils;
 import com.jaymullen.TrailJournal.provider.JournalContract;
-import com.jaymullen.TrailJournal.wizard.model.AbstractWizardModel;
-import com.jaymullen.TrailJournal.wizard.model.ModelCallbacks;
-import com.jaymullen.TrailJournal.wizard.model.Page;
+import com.jaymullen.TrailJournal.wizard.model.*;
 import com.jaymullen.TrailJournal.wizard.ui.PageFragmentCallbacks;
 import com.jaymullen.TrailJournal.wizard.ui.ReviewFragment;
 import com.jaymullen.TrailJournal.wizard.ui.StepPagerStrip;
 import com.jaymullen.TrailJournal.provider.JournalContract.*;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,10 +89,29 @@ public class EntryActivity extends SherlockFragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ContentValues cv = new ContentValues();
-        cv.put(JournalEntry.JOURNAL_ID, Auth.getInstance(this).getJournalId());
-        cv.put(JournalEntry.IS_PUBLISHED, 0);
-        mEntryUri = getContentResolver().insert(JournalContract.JournalEntry.CONTENT_URI, cv);
+        Intent intent = getIntent();
+
+        if(intent.getData() != null){
+            mEntryUri = intent.getData();
+            Cursor c = getContentResolver().query(
+                    mEntryUri,
+                    HomeActivity.Entries.PROJECTION,
+                    null,
+                    null,
+                    JournalEntry.DEFAULT_SORT);
+
+            if(c.moveToFirst()){
+                setPostType(c.getString(HomeActivity.Entries.TYPE));
+
+                setValuesOnPages(c);
+            }
+            c.close();
+        } else {
+            ContentValues cv = new ContentValues();
+            cv.put(JournalEntry.JOURNAL_ID, Auth.getInstance(this).getJournalId());
+            cv.put(JournalEntry.IS_PUBLISHED, 0);
+            mEntryUri = getContentResolver().insert(JournalEntry.CONTENT_URI, cv);
+        }
 
         if (savedInstanceState != null) {
             mWizardModel.load(savedInstanceState.getBundle("model"));
@@ -203,12 +226,29 @@ public class EntryActivity extends SherlockFragmentActivity implements
 
         ContentValues cv = new ContentValues();
         for(Map.Entry<String, String> entry : reviewItems.entrySet()){
+            //convert date to timestamp
+            if(entry.getKey().equals(JournalEntry.DATE)){
+                cv.put(JournalEntry.TIMESTAMP, getTimestamp(entry.getValue()));
+            }
             cv.put(entry.getKey(), entry.getValue());
-            Log.d("Review", "key: " + entry.getKey() + " value: " + entry.getValue());
         }
 
         Log.d("Review", "uri: " + mEntryUri);
         getContentResolver().update(mEntryUri, cv, null, null);
+    }
+
+    private long getTimestamp(String dateString){
+
+        try{
+            DateFormat formatter ;
+            Date date ;
+            formatter = new SimpleDateFormat("MM/dd/yyyy");
+            date = (Date)formatter.parse(dateString);
+
+            return date.getTime();
+        } catch (ParseException e){
+            return 0;
+        }
     }
     private boolean publishEntry(){
 
@@ -357,6 +397,33 @@ public class EntryActivity extends SherlockFragmentActivity implements
 
         public int getCutOffPage() {
             return mCutOffPage;
+        }
+    }
+
+    private void setPostType(String type){
+        for(Page p : mWizardModel.getCurrentPageSequence()){
+            if(p instanceof BranchPage){
+                ((BranchPage)p).setValue(type);
+                ((BranchPage)p).notifyDataChanged();
+            }
+        }
+    }
+
+    private void setValuesOnPages(Cursor c){
+        Log.d("Values", "pages size: " + mWizardModel.getCurrentPageSequence().size());
+        for(Page p : mWizardModel.getCurrentPageSequence()){
+            if(p instanceof TitlePage){
+                ((TitlePage)p).setValue(c.getString(HomeActivity.Entries.TITLE));
+            }
+            else if(p instanceof MilesPage){
+                ((MilesPage)p).setValue(c.getString(HomeActivity.Entries.MILES));
+            }
+            else if(p instanceof BodyPage){
+                ((BodyPage)p).setValue(c.getString(HomeActivity.Entries.ENTRY_TEXT));
+            }
+            else if(p instanceof DatePage){
+                ((DatePage)p).setValue(c.getString(HomeActivity.Entries.DATE));
+            }
         }
     }
 }

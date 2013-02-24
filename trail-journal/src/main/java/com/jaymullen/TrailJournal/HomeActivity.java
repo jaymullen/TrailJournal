@@ -1,6 +1,7 @@
 package com.jaymullen.TrailJournal;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -10,6 +11,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.jaymullen.TrailJournal.core.Auth;
@@ -35,6 +37,8 @@ public class HomeActivity extends BaseActivity
 
         setContentView(R.layout.main);
 
+        getSupportActionBar().setTitle("Entries");
+
         mEntryList = (ListView)findViewById(R.id.list_entries);
 
         mAuth = mAuth.getInstance(this);
@@ -44,6 +48,18 @@ public class HomeActivity extends BaseActivity
         mAdapter = new EntryCursorAdapter(this, null);
 
         mEntryList.setAdapter(mAdapter);
+
+        mEntryList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Cursor c = (Cursor)mAdapter.getItem(position);
+                Intent entryEditIntent = new Intent(HomeActivity.this, EntryActivity.class);
+                entryEditIntent.setData(
+                        JournalEntry.buildJournalUri(String.valueOf(c.getInt(Entries.ID)))
+                        );
+                startActivity(entryEditIntent);
+            }
+        });
     }
 
     @Override
@@ -82,8 +98,8 @@ public class HomeActivity extends BaseActivity
             TextView title = (TextView)view.findViewById(R.id.entry_title);
             title.setText(cursor.getString(Entries.TITLE));
 
-            TextView id = (TextView)view.findViewById(R.id.entry_id);
-            id.setText(cursor.getString(Entries.ID));
+            TextView id = (TextView)view.findViewById(R.id.entry_date);
+            id.setText(cursor.getString(Entries.DATE));
         }
 
         @Override
@@ -95,12 +111,13 @@ public class HomeActivity extends BaseActivity
         }
     }
 
-    interface Entries{
+    public interface Entries{
         int TOKEN = 0x8;
 
         String[] PROJECTION = {
                 JournalEntry._ID,
                 JournalEntry.DATE,
+                JournalEntry.TIMESTAMP,
                 JournalEntry.TITLE,
                 JournalEntry.IS_PUBLISHED,
                 JournalEntry.TYPE,
@@ -108,19 +125,22 @@ public class HomeActivity extends BaseActivity
                 JournalEntry.END_DEST,
                 JournalEntry.START_DEST,
                 JournalEntry.SLEEP_LOCATION,
+                JournalEntry.ENTRY_TEXT,
                 JournalEntry.MILES
         };
 
         int ID = 0;
         int DATE = 1;
-        int TITLE = 2;
-        int IS_PUBLISHED = 3;
-        int TYPE = 4;
-        int DISPLAY = 5;
-        int END = 6;
-        int START = 7;
-        int SLEEP_LOC = 8;
-        int MILES = 9;
+        int TIMESTAMP = 2;
+        int TITLE = 3;
+        int IS_PUBLISHED = 4;
+        int TYPE = 5;
+        int DISPLAY = 6;
+        int END = 7;
+        int START = 8;
+        int SLEEP_LOC = 9;
+        int ENTRY_TEXT = 10;
+        int MILES = 11;
 
     }
 }

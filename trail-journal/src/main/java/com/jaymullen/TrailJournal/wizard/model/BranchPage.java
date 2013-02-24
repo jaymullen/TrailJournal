@@ -101,6 +101,7 @@ public class BranchPage extends SingleFixedChoicePage {
 
     public BranchPage setValue(String value) {
         mData.putString(SIMPLE_DATA_KEY, value);
+        notifyDataChanged();
         return this;
     }
 

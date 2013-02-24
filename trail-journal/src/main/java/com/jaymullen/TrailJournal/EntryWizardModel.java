@@ -28,7 +28,7 @@ public class EntryWizardModel extends AbstractWizardModel {
     @Override
     protected PageList onNewRootPageList() {
         return new PageList(
-                new BranchPage(this, "Post type", JournalContract.JournalEntries.TYPE)
+                new BranchPage(this, "Post type", JournalContract.JournalEntry.TYPE)
                         .addBranch("Prep",
                                 new DatePage(this, "Entry Date"),
 
@@ -38,7 +38,7 @@ public class EntryWizardModel extends AbstractWizardModel {
 //                                        .setChoices("Tomatoes", "Lettuce", "Onions", "Pickles",
 //                                                "Cucumbers", "Peppers"),
 
-                                new SingleFixedChoicePage(this, "Display in Journal", JournalContract.JournalEntries.DISPLAY_IN_JOURNAL)
+                                new SingleFixedChoicePage(this, "Display in Journal", JournalContract.JournalEntry.DISPLAY_IN_JOURNAL)
                                         .setChoices("Yes", "No")
                                         .setValue("Yes"),
 
@@ -49,18 +49,18 @@ public class EntryWizardModel extends AbstractWizardModel {
 
                                 new LocationPage(this, "Location"),
 
-                                new SingleFixedChoicePage(this, "Sleeping Location", JournalContract.JournalEntries.SLEEP_LOCATION)
+                                new SingleFixedChoicePage(this, "Sleeping Location", JournalContract.JournalEntry.SLEEP_LOCATION)
                                         .setChoices("Tent", "Shelter", "Hammock",
                                                 "Under Stars", "Hotel", "Hostel", "House")
                                         .setValue("Shelter"),
 
-                                new TitlePage(this, "Daily Miles"),
+                                new MilesPage(this, "Daily Miles"),
 
 //                                new PhotoPage(this, "Veggies")
 //                                        .setChoices("Tomatoes", "Lettuce", "Onions", "Pickles",
 //                                                "Cucumbers", "Peppers"),
 
-                                new SingleFixedChoicePage(this, "Display in Journal", JournalContract.JournalEntries.DISPLAY_IN_JOURNAL)
+                                new SingleFixedChoicePage(this, "Display in Journal", JournalContract.JournalEntry.DISPLAY_IN_JOURNAL)
                                         .setChoices("Yes", "No")
                                         .setValue("Yes"),
 

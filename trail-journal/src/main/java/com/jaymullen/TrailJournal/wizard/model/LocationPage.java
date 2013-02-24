@@ -28,8 +28,8 @@ import java.util.HashMap;
  * A page asking for a starting and ending location
  */
 public class LocationPage extends Page {
-    public static final String DESTINATION_DATA_KEY = JournalContract.JournalEntries.END_DEST;
-    public static final String START_DATA_KEY = JournalContract.JournalEntries.START_DEST;
+    public static final String DESTINATION_DATA_KEY = JournalContract.JournalEntry.END_DEST;
+    public static final String START_DATA_KEY = JournalContract.JournalEntry.START_DEST;
 
     public LocationPage(ModelCallbacks callbacks, String title) {
         super(callbacks, title);

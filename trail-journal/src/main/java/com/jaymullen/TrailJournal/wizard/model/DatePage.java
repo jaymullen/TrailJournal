@@ -17,7 +17,7 @@ import java.util.HashMap;
  */
 public class DatePage extends Page {
 
-    public static final String DATE_DATA_KEY = JournalContract.JournalEntries.DATE;
+    public static final String DATE_DATA_KEY = JournalContract.JournalEntry.DATE;
 
     public DatePage(ModelCallbacks callbacks, String title) {
         super(callbacks, title);
@@ -41,5 +41,9 @@ public class DatePage extends Page {
     @Override
     public boolean isCompleted() {
         return !TextUtils.isEmpty(mData.getString(DATE_DATA_KEY));
+    }
+
+    public void setValue(String value){
+        mData.putString(DATE_DATA_KEY, value);
     }
 }

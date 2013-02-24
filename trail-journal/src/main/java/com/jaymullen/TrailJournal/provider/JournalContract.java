@@ -15,6 +15,7 @@ public class JournalContract {
     interface JournalEntryColumns {
         String TYPE = "type";
         String DATE = "date";
+        String TIMESTAMP = "timestamp";
         String TITLE = "title";
         String START_DEST = "startDest";
         String END_DEST = "endDest";
@@ -49,10 +50,10 @@ public class JournalContract {
         }
 
         /** Default "ORDER BY" clause. */
-        public static final String DEFAULT_SORT = JournalEntryColumns.DATE + " ASC";
+        public static final String DEFAULT_SORT = JournalEntryColumns.TIMESTAMP + " DESC";
 
         /** Build {@link Uri} for requested {@link #_ID}. */
-        public static Uri buildFavoriteUri(String key) {
+        public static Uri buildJournalUri(String key) {
             return CONTENT_URI.buildUpon().appendPath(key).build();
         }
     }

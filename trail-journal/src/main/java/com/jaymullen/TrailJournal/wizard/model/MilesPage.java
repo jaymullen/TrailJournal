@@ -19,6 +19,7 @@ package com.jaymullen.TrailJournal.wizard.model;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import com.jaymullen.TrailJournal.provider.JournalContract;
+import com.jaymullen.TrailJournal.wizard.ui.MilesFragment;
 import com.jaymullen.TrailJournal.wizard.ui.TitleFragment;
 
 import java.util.ArrayList;
@@ -27,39 +28,39 @@ import java.util.HashMap;
 /**
  * A page asking for a name and an email.
  */
-public class TitlePage extends Page {
+public class MilesPage extends Page {
     /* This may be a strange name but it corresponds to form fields on the site.  DO NOT CHANGE */
-    public static final String TITLE_DATA_KEY = JournalContract.JournalEntry.TITLE;
+    public static final String MILES_DATA_KEY = JournalContract.JournalEntry.MILES;
 
     private String mTitle;
 
-    public TitlePage(ModelCallbacks callbacks, String title) {
+    public MilesPage(ModelCallbacks callbacks, String title) {
         super(callbacks, title);
         mTitle = title;
     }
 
     public void setValue(String title){
         mTitle = title;
-        mData.putString(TITLE_DATA_KEY, title);
+        mData.putString(MILES_DATA_KEY, title);
 
     }
     @Override
     public Fragment createFragment() {
-        return TitleFragment.create(getKey());
+        return MilesFragment.create(getKey());
     }
 
     @Override
     public void getReviewItems(ArrayList<ReviewItem> dest) {
-        dest.add(new ReviewItem(mTitle, mData.getString(TITLE_DATA_KEY), getKey(), -1));
+        dest.add(new ReviewItem(mTitle, mData.getString(MILES_DATA_KEY), getKey(), -1));
     }
 
     @Override
     public void getReviewItemsForForm(HashMap<String, String> dest) {
-        dest.put(TITLE_DATA_KEY, mData.getString(TITLE_DATA_KEY));
+        dest.put(MILES_DATA_KEY, mData.getString(MILES_DATA_KEY));
     }
 
     @Override
     public boolean isCompleted() {
-        return !TextUtils.isEmpty(mData.getString(TITLE_DATA_KEY));
+        return !TextUtils.isEmpty(mData.getString(MILES_DATA_KEY));
     }
 }

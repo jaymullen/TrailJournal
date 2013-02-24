@@ -123,9 +123,10 @@ public class JournalProvider extends ContentProvider {
         // !SyncContract.hasCallerIsSyncAdapterParameter(uri);
         switch (match) {
             case JOURNAL_ENTRY: {
-                db.insertOrThrow(Tables.JOURNAL_ENTRIES, null, values);
+                long id = db.insertOrThrow(Tables.JOURNAL_ENTRIES, null, values);
                 getContext().getContentResolver().notifyChange(uri, null, false);
-                return JournalEntry.CONTENT_URI;
+                Uri itemUri = JournalEntry.buildJournalUri(String.valueOf(id));
+                return itemUri;
             }
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

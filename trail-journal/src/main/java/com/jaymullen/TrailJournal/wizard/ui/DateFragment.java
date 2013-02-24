@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import com.jaymullen.TrailJournal.R;
+import com.jaymullen.TrailJournal.wizard.model.BodyPage;
 import com.jaymullen.TrailJournal.wizard.model.DatePage;
 
 import java.util.Calendar;
@@ -66,17 +69,32 @@ public class DateFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_date, container, false);
         ((TextView) rootView.findViewById(android.R.id.title)).setText(mPage.getTitle());
 
-
-        final Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
         mDateView = ((DatePicker) rootView.findViewById(R.id.entry_date));
-        mDateView.init(year, month, day, mDateListener);
 
-        String date = (month+1) + "/" + day + "/" + year;
-        mPage.getData().putString(DatePage.DATE_DATA_KEY, date);
+        String initDate;
+        if(TextUtils.isEmpty(mPage.getData().getString(DatePage.DATE_DATA_KEY))){
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            mDateView.init(year, month, day, mDateListener);
+
+            initDate = (month+1) + "/" + day + "/" + year;
+            mPage.getData().putString(DatePage.DATE_DATA_KEY, initDate);
+        } else {
+            String[] dateParts = mPage.getData().getString(DatePage.DATE_DATA_KEY).split("/");
+
+            if(dateParts.length == 3){
+                mDateView.init(
+                        Integer.valueOf(dateParts[2]),
+                        Integer.valueOf(dateParts[0]) - 1,
+                        Integer.valueOf(dateParts[1]),
+                        mDateListener
+                );
+            }
+        }
+
         mPage.notifyDataChanged();
 
         return rootView;

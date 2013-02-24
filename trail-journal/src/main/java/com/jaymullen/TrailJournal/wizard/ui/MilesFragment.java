@@ -28,27 +28,27 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import com.jaymullen.TrailJournal.R;
-import com.jaymullen.TrailJournal.wizard.model.BodyPage;
+import com.jaymullen.TrailJournal.wizard.model.MilesPage;
 import com.jaymullen.TrailJournal.wizard.model.TitlePage;
 
-public class BodyFragment extends Fragment {
+public class MilesFragment extends Fragment {
     private static final String ARG_KEY = "key";
 
     private PageFragmentCallbacks mCallbacks;
     private String mKey;
-    private BodyPage mPage;
-    private TextView mBodyView;
+    private MilesPage mPage;
+    private TextView mMilesView;
 
-    public static BodyFragment create(String key) {
+    public static MilesFragment create(String key) {
         Bundle args = new Bundle();
         args.putString(ARG_KEY, key);
 
-        BodyFragment fragment = new BodyFragment();
+        MilesFragment fragment = new MilesFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
-    public BodyFragment() {
+    public MilesFragment() {
     }
 
     @Override
@@ -57,20 +57,17 @@ public class BodyFragment extends Fragment {
 
         Bundle args = getArguments();
         mKey = args.getString(ARG_KEY);
-        mPage = (BodyPage) mCallbacks.onGetPage(mKey);
+        mPage = (MilesPage) mCallbacks.onGetPage(mKey);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_page_body, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_page_miles, container, false);
         ((TextView) rootView.findViewById(android.R.id.title)).setText(mPage.getTitle());
 
-        mBodyView = ((TextView) rootView.findViewById(R.id.entry_title));
-
-        mBodyView.setTextAppearance(getActivity(), android.R.style.TextAppearance_Large);
-
-        mBodyView.setText(mPage.getData().getString(BodyPage.BODY_DATA_KEY));
+        mMilesView = ((TextView) rootView.findViewById(R.id.entry_miles));
+        mMilesView.setText(mPage.getData().getString(MilesPage.MILES_DATA_KEY));
 
         return rootView;
     }
@@ -96,10 +93,10 @@ public class BodyFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mBodyView.addTextChangedListener(new TextWatcher() {
+        mMilesView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1,
-                    int i2) {
+                                          int i2) {
             }
 
             @Override
@@ -108,7 +105,7 @@ public class BodyFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                mPage.getData().putString(BodyPage.BODY_DATA_KEY,
+                mPage.getData().putString(MilesPage.MILES_DATA_KEY,
                         (editable != null) ? editable.toString() : null);
                 mPage.notifyDataChanged();
             }
@@ -121,7 +118,7 @@ public class BodyFragment extends Fragment {
 
         // In a future update to the support library, this should override setUserVisibleHint
         // instead of setMenuVisibility.
-        if (mBodyView != null) {
+        if (mMilesView != null) {
             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
                     Context.INPUT_METHOD_SERVICE);
             if (!menuVisible) {

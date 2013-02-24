@@ -27,11 +27,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <EditText android:id="@+id/entry_title"
+            <EditText android:id="@+id/entry_miles"
                 android:layout_width="match_parent"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:saveEnabled="false"
-                android:inputType="textCapWords|textMultiLine"
+                android:inputType="numberDecimal"
                 android:layout_marginBottom="16dp" />
 
         </LinearLayout>
