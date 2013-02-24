@@ -12,6 +12,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.jaymullen.TrailJournal.core.Auth;
@@ -136,11 +137,42 @@ public class HomeActivity extends BaseActivity
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            TextView title = (TextView)view.findViewById(R.id.entry_title);
-            title.setText(cursor.getString(Entries.TITLE));
+            TextView date = (TextView)view.findViewById(R.id.entry_date);
+            TextView start = (TextView)view.findViewById(R.id.entry_start_location);
+            TextView end = (TextView)view.findViewById(R.id.entry_end_location);
+            TextView startLabel = (TextView)view.findViewById(R.id.entry_location_start_label);
+            TextView endLabel = (TextView)view.findViewById(R.id.entry_location_end_label);
+            ImageView contextArrow = (ImageView)view.findViewById(R.id.entry_options);
 
-            TextView id = (TextView)view.findViewById(R.id.entry_date);
-            id.setText(cursor.getString(Entries.DATE));
+            String type = cursor.getString(Entries.TYPE);
+
+            date.setText(cursor.getString(Entries.DATE));
+
+            if(type != null){
+                Log.d("Adapter", "Type: " + type);
+                if(type.equals(JournalEntry.TYPE_PREP)){
+                    start.setText(cursor.getString(Entries.TITLE));
+                    end.setVisibility(View.GONE);
+                    startLabel.setVisibility(View.GONE);
+                    endLabel.setVisibility(View.GONE);
+                }
+                else if(type.equals(JournalEntry.TYPE_TRAIL)){
+                    Log.d("Adapter", "Start: " + cursor.getString(Entries.START) + " end: " + cursor.getString(Entries.END));
+                    start.setText(cursor.getString(Entries.START));
+                    end.setText(cursor.getString(Entries.END));
+
+                    end.setVisibility(View.VISIBLE);
+                    startLabel.setVisibility(View.VISIBLE);
+                    endLabel.setVisibility(View.VISIBLE);
+                }
+            }
+
+            contextArrow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                     openContextMenu(v);
+                }
+            });
         }
 
         @Override

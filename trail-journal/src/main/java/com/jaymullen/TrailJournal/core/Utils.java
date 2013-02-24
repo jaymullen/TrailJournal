@@ -5,7 +5,7 @@ import android.net.ConnectivityManager;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -64,5 +64,25 @@ public class Utils {
 
         return (cm.getActiveNetworkInfo() != null)
                 && cm.getActiveNetworkInfo().isConnectedOrConnecting();
+    }
+
+    /**
+     * Loads raw resource and returns as string
+     */
+    public static String loadResourceAsString(Context context, int resource) throws IOException {
+        InputStream is = context.getResources().openRawResource(resource);
+        Writer writer = new StringWriter();
+        char[] buffer = new char[1024];
+        try {
+            Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            int n;
+            while ((n = reader.read(buffer)) != -1) {
+                writer.write(buffer, 0, n);
+            }
+        } finally {
+            is.close();
+        }
+
+        return writer.toString();
     }
 }

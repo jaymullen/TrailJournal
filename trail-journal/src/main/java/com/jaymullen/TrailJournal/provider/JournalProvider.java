@@ -29,6 +29,8 @@ public class JournalProvider extends ContentProvider {
     private static final int JOURNAL_ENTRY = 101;
     private static final int JOURNAL_ENTRY_ITEM = 102;
 
+    private static final int LOCATION = 201;
+    private static final int LOCATION_ITEM = 202;
 
     /**
      * Build and return a {@link UriMatcher} that catches all {@link Uri}
@@ -40,6 +42,9 @@ public class JournalProvider extends ContentProvider {
 
         matcher.addURI(authority, "journal_entry", JOURNAL_ENTRY);
         matcher.addURI(authority, "journal_entry/*", JOURNAL_ENTRY_ITEM);
+
+        matcher.addURI(authority, "location", LOCATION);
+        matcher.addURI(authority, "location/*", LOCATION_ITEM);
 
         return matcher;
     }
@@ -53,6 +58,10 @@ public class JournalProvider extends ContentProvider {
                 return JournalEntry.CONTENT_TYPE;
             case JOURNAL_ENTRY_ITEM:
                 return JournalEntry.CONTENT_ITEM_TYPE;
+            case LOCATION :
+                return Location.CONTENT_TYPE;
+            case LOCATION_ITEM:
+                return Location.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -128,6 +137,12 @@ public class JournalProvider extends ContentProvider {
                 Uri itemUri = JournalEntry.buildJournalUri(String.valueOf(id));
                 return itemUri;
             }
+            case LOCATION : {
+                long locationId = db.insertOrThrow(Tables.LOCATIONS, null, values);
+                getContext().getContentResolver().notifyChange(uri, null, false);
+                Uri locationUri = JournalEntry.buildJournalUri(String.valueOf(locationId));
+                return locationUri;
+            }
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
             }
@@ -140,32 +155,35 @@ public class JournalProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         String table;
         switch (match) {
+            case LOCATION:
+                table = Tables.LOCATIONS;
+                break;
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
             }
         }
 
-//        int rowsAdded = 0;
-//        long rowId;
-//
-//        try {
-//            db.beginTransaction();
-//            for (ContentValues initialValues : allValues) {
-//
-//                rowId = db.insertOrThrow(table, null, initialValues);
-//                if (rowId > 0)
-//                    rowsAdded++;
-//            }
-//
-//            db.setTransactionSuccessful();
-//        } catch (SQLException ex) {
-//            Log.e(LOG_TAG, "There was a problem with the bulk insert table: "
-//                    + table);
-//        } finally {
-//            db.endTransaction();
-//        }
-//        getContext().getContentResolver().notifyChange(uri, null, false);
-//        return rowsAdded;
+        int rowsAdded = 0;
+        long rowId;
+
+        try {
+            db.beginTransaction();
+            for (ContentValues initialValues : allValues) {
+
+                rowId = db.insertOrThrow(table, null, initialValues);
+                if (rowId > 0)
+                    rowsAdded++;
+            }
+
+            db.setTransactionSuccessful();
+        } catch (SQLException ex) {
+            Log.e(LOG_TAG, "There was a problem with the bulk insert table: "
+                    + table);
+        } finally {
+            db.endTransaction();
+        }
+        getContext().getContentResolver().notifyChange(uri, null, false);
+        return rowsAdded;
     }
 
     @Override
@@ -197,6 +215,9 @@ public class JournalProvider extends ContentProvider {
                 final String key = JournalEntry.getKey(uri);
                 return builder.table(Tables.JOURNAL_ENTRIES).where(
                         JournalEntry._ID + "=?", key);
+            }
+            case LOCATION : {
+                return builder.table(Tables.LOCATIONS);
             }
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

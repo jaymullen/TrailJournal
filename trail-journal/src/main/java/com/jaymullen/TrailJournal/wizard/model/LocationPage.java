@@ -42,7 +42,7 @@ public class LocationPage extends Page {
 
     @Override
     public void getReviewItems(ArrayList<ReviewItem> dest) {
-        dest.add(new ReviewItem("Destination", mData.getString(DESTINATION_DATA_KEY), getKey(), -1));
+        dest.add(new ReviewItem("Ending Location", mData.getString(DESTINATION_DATA_KEY), getKey(), -1));
         dest.add(new ReviewItem("Starting Location", mData.getString(START_DATA_KEY), getKey(), -1));
     }
 
@@ -55,5 +55,13 @@ public class LocationPage extends Page {
     @Override
     public boolean isCompleted() {
         return !TextUtils.isEmpty(mData.getString(DESTINATION_DATA_KEY));
+    }
+
+    public void setStartValue(String value){
+        mData.putString(START_DATA_KEY, value);
+    }
+
+    public void setEndValue(String value){
+        mData.putString(DESTINATION_DATA_KEY, value);
     }
 }

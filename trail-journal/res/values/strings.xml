@@ -31,10 +31,12 @@
     <string name="label_entry_title">Entry Title</string>
     <string name="label_start">Starting Location</string>
     <string name="label_end">Ending Location</string>
+    <string name="label_start_list">Start:&#160;</string>
+    <string name="label_end_list">End:&#160;</string>
     <string name="label_your_name">Name</string>
     <string name="label_your_email">Email</string>
-    <string name="hint_your_name">e.g. Larry</string>
-    <string name="hint_your_email">Optional</string>
+    <string name="hint_start">e.g. Springer</string>
+    <string name="hint_end">Kathadin</string>
 
     <string name="submit_confirm_message">Place the order with the deli? You will receive an email
         confirmation.</string>

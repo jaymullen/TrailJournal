@@ -26,6 +26,7 @@ public class JournalDatabase extends SQLiteOpenHelper {
 
     interface Tables {
         String JOURNAL_ENTRIES = "journal_entries";
+        String LOCATIONS = "locations";
     }
 
     @Override
@@ -46,6 +47,10 @@ public class JournalDatabase extends SQLiteOpenHelper {
                 + JournalEntryColumns.IS_PUBLISHED + " INT,"
                 + JournalEntryColumns.JOURNAL_ID + " INT)");
 
+        db.execSQL("CREATE TABLE " + Tables.LOCATIONS + " ("
+                + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + LocationColumns.NAME + " TEXT,"
+                + "UNIQUE (" + LocationColumns.NAME + ") ON CONFLICT REPLACE)");
     }
 
     @Override

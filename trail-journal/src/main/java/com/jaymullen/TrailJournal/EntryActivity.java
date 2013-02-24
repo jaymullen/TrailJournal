@@ -254,7 +254,6 @@ public class EntryActivity extends SherlockFragmentActivity implements
         } else {
             saveEntry();
         }
-
     }
 
     @Override
@@ -278,6 +277,7 @@ public class EntryActivity extends SherlockFragmentActivity implements
             if(entry.getKey().equals(JournalEntry.DATE)){
                 cv.put(JournalEntry.TIMESTAMP, getTimestamp(entry.getValue()));
             }
+            Log.d("Values", "key: " + entry.getKey() + " value: " + entry.getValue());
             cv.put(entry.getKey(), entry.getValue());
         }
 
@@ -471,6 +471,10 @@ public class EntryActivity extends SherlockFragmentActivity implements
             }
             else if(p instanceof DatePage){
                 ((DatePage)p).setValue(c.getString(HomeActivity.Entries.DATE));
+            }
+            else if(p instanceof LocationPage){
+                ((LocationPage)p).setStartValue(c.getString(HomeActivity.Entries.START));
+                ((LocationPage)p).setEndValue(c.getString(HomeActivity.Entries.END));
             }
         }
     }

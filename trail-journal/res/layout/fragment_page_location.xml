@@ -30,23 +30,23 @@
             <TextView style="@style/WizardFormLabel"
                 android:text="@string/label_start" />
 
-            <EditText android:id="@+id/start_location"
+            <AutoCompleteTextView android:id="@+id/start_location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:saveEnabled="false"
                 android:inputType="textCapWords"
-                android:hint="@string/hint_your_name"
+                android:hint="@string/hint_start"
                 android:layout_marginBottom="16dp" />
 
             <TextView style="@style/WizardFormLabel"
                 android:text="@string/label_end" />
 
-            <EditText android:id="@+id/end_location"
+            <AutoCompleteTextView android:id="@+id/end_location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:saveEnabled="false"
                 android:inputType="textEmailAddress"
-                android:hint="@string/hint_your_email" />
+                android:hint="@string/hint_end" />
 
         </LinearLayout>
     </ScrollView>

@@ -27,20 +27,28 @@ public class JournalContract {
         String JOURNAL_ID = "journalID";
     }
 
+    interface LocationColumns {
+        String NAME = "name";
+    }
+
     public static final String CONTENT_AUTHORITY = "com.jaymullen.trailjournal";
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://"
             + CONTENT_AUTHORITY);
 
     private static final String PATH_JOURNAL_ENTRIES = "journal_entry";
+    private static final String PATH_LOCATION = "location";
 
     public static class JournalEntry implements JournalEntryColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PATH_JOURNAL_ENTRIES).build();
 
-        /** Status's for favorites **/
+        /** Status constants **/
         public static final int NOT_PUBLISHED = 0;
         public static final int PUBLISHED = 1;
+
+        public static final String TYPE_PREP = "Prep";
+        public static final String TYPE_TRAIL = "Trail";
 
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.trail_journal.entry";
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.trail_journal.entry";
@@ -57,6 +65,27 @@ public class JournalContract {
             return CONTENT_URI.buildUpon().appendPath(key).build();
         }
     }
+
+    public static class Location implements LocationColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_LOCATION).build();
+
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.location.entry";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.location.entry";
+
+        public static String getKey(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        /** Default "ORDER BY" clause. */
+        public static final String DEFAULT_SORT = LocationColumns.NAME + " DESC";
+
+        /** Build {@link Uri} for requested {@link #_ID}. */
+        public static Uri buildLocationUri(String key) {
+            return CONTENT_URI.buildUpon().appendPath(key).build();
+        }
+    }
+
     private JournalContract() {
     }
 }
