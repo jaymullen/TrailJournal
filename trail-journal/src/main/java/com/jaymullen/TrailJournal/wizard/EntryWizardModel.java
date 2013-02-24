@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jaymullen.TrailJournal;
+package com.jaymullen.TrailJournal.wizard;
 
 import android.content.Context;
 import com.jaymullen.TrailJournal.provider.JournalContract;

@@ -9,6 +9,9 @@
     <string name="username">Username:</string>
     <string name="password">Password:</string>
 
+    <string name="edit_entry">Edit Entry</string>
+    <string name="delete_entry">Delete Entry</string>
+
     <string name="add_post">Add Entry</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>

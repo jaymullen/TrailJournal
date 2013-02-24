@@ -40,7 +40,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.jaymullen.TrailJournal.core.Auth;
 import com.jaymullen.TrailJournal.core.Utils;
-import com.jaymullen.TrailJournal.provider.JournalContract;
+import com.jaymullen.TrailJournal.wizard.EntryWizardModel;
 import com.jaymullen.TrailJournal.wizard.model.*;
 import com.jaymullen.TrailJournal.wizard.ui.PageFragmentCallbacks;
 import com.jaymullen.TrailJournal.wizard.ui.ReviewFragment;
@@ -91,6 +91,7 @@ public class EntryActivity extends SherlockFragmentActivity implements
 
         Intent intent = getIntent();
 
+        String title;
         if(intent.getData() != null){
             mEntryUri = intent.getData();
             Cursor c = getContentResolver().query(
@@ -101,17 +102,28 @@ public class EntryActivity extends SherlockFragmentActivity implements
                     JournalEntry.DEFAULT_SORT);
 
             if(c.moveToFirst()){
+                title = c.getString(HomeActivity.Entries.DATE);
+
                 setPostType(c.getString(HomeActivity.Entries.TYPE));
 
                 setValuesOnPages(c);
+            } else {
+                title = "New Entry";
             }
             c.close();
+
+
         } else {
+            title = "New Entry";
             ContentValues cv = new ContentValues();
             cv.put(JournalEntry.JOURNAL_ID, Auth.getInstance(this).getJournalId());
             cv.put(JournalEntry.IS_PUBLISHED, 0);
             mEntryUri = getContentResolver().insert(JournalEntry.CONTENT_URI, cv);
         }
+
+        getSupportActionBar().setTitle(title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         if (savedInstanceState != null) {
             mWizardModel.load(savedInstanceState.getBundle("model"));
@@ -190,7 +202,13 @@ public class EntryActivity extends SherlockFragmentActivity implements
                 //TODO: implement
             }
         });
+
         onPageTreeChanged();
+
+        if(intent.getAction() == Intent.ACTION_EDIT){
+            mPager.setCurrentItem(mPagerAdapter.getCount() - 1);
+        }
+
         updateBottomBar();
     }
 
@@ -203,10 +221,40 @@ public class EntryActivity extends SherlockFragmentActivity implements
 
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        if(item.getItemId() == R.id.save_draft){
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                // This is called when the Home (Up) button is pressed
+                // in the Action Bar.
+                Intent parentActivityIntent = new Intent(this, HomeActivity.class);
+                parentActivityIntent.addFlags(
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                                Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(parentActivityIntent);
+                finish();
+                return true;
+            }
+            case R.id.save_draft: {
+                saveEntry();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if(mWizardModel.getCurrentPageSequence().size() <= 1){
+            getContentResolver().delete(
+                    mEntryUri,
+                    null,
+                    null);
+        } else {
             saveEntry();
         }
-        return true;
+
     }
 
     @Override

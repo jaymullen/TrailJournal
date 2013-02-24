@@ -3,14 +3,14 @@ package com.jaymullen.TrailJournal;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.util.Log;
+import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -52,19 +52,23 @@ public class HomeActivity extends BaseActivity
         mEntryList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor c = (Cursor)mAdapter.getItem(position);
-                Intent entryEditIntent = new Intent(HomeActivity.this, EntryActivity.class);
-                entryEditIntent.setData(
-                        JournalEntry.buildJournalUri(String.valueOf(c.getInt(Entries.ID)))
-                        );
-                startActivity(entryEditIntent);
+                editEntry(position);
             }
         });
+
+        registerForContextMenu(mEntryList);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, JournalEntry.CONTENT_URI, Entries.PROJECTION, null, null, JournalEntry.DEFAULT_SORT);
+        return new CursorLoader(
+                this,
+                JournalEntry.CONTENT_URI,
+                Entries.PROJECTION,
+                null,
+                null,
+                JournalEntry.DEFAULT_SORT
+        );
     }
 
     @Override
@@ -79,13 +83,50 @@ public class HomeActivity extends BaseActivity
     }
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.entry_context, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case R.id.edit_post:
+                editEntry(info.position);
+                return true;
+            case R.id.delete_post:
+                deleteEntry(info.position);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    private void editEntry(int position){
+        Cursor c = (Cursor)mAdapter.getItem(position);
+        Intent entryEditIntent = new Intent(HomeActivity.this, EntryActivity.class);
+        entryEditIntent.setData(
+                JournalEntry.buildJournalUri(String.valueOf(c.getInt(Entries.ID)))
+        );
+
+        entryEditIntent.setAction(Intent.ACTION_EDIT);
+        startActivity(entryEditIntent);
+    }
+
+    private void deleteEntry(int position){
+        Cursor c = (Cursor)mAdapter.getItem(position);
+        Uri entryToDelete = JournalEntry.buildJournalUri(c.getString(Entries.ID));
+        getContentResolver().delete(
+                entryToDelete,
+                null,
+                null);
+    }
+    @Override
     protected void onResume() {
         super.onResume();
-
-//        if(mAuth.isLoggedIn()){
-//            String url = "http://www.trailjournals.com/login/welcome.cfm?" + mAuth.getCfid() + "&" + mAuth.getCftoken();
-//            mWebView.loadUrl(url);
-//        }
     }
 
     public class EntryCursorAdapter extends CursorAdapter {
