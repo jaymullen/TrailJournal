@@ -34,7 +34,7 @@ public class JournalApplication extends Application {
                 boolean isFirstRun = prefs.getBoolean("isFirstRun", true);
                 if(isFirstRun){
                     try{
-                        String shelters = Utils.loadResourceAsString(JournalApplication.this, R.raw.at_shelter_list);
+                        String shelters = Utils.loadResourceAsString(JournalApplication.this, R.raw.at_location_list);
                         String[] shelterArray = shelters.split(",");
 
                         final ArrayList<ContentValues> allValues = new ArrayList<ContentValues>();

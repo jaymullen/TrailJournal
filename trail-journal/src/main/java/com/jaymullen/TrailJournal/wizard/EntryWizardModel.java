@@ -38,7 +38,7 @@ public class EntryWizardModel extends AbstractWizardModel {
 //                                        .setChoices("Tomatoes", "Lettuce", "Onions", "Pickles",
 //                                                "Cucumbers", "Peppers"),
 
-                                new SingleFixedChoicePage(this, "Display in Journal", JournalContract.JournalEntry.DISPLAY_IN_JOURNAL)
+                                new DisplayJournalPage(this, "Display in Journal", JournalContract.JournalEntry.DISPLAY_IN_JOURNAL)
                                         .setChoices("Yes", "No")
                                         .setValue("Yes"),
 
@@ -49,7 +49,7 @@ public class EntryWizardModel extends AbstractWizardModel {
 
                                 new LocationPage(this, "Location"),
 
-                                new SingleFixedChoicePage(this, "Sleeping Location", JournalContract.JournalEntry.SLEEP_LOCATION)
+                                new SleepPage(this, "Sleeping Location", JournalContract.JournalEntry.SLEEP_LOCATION)
                                         .setChoices("Tent", "Shelter", "Hammock",
                                                 "Under Stars", "Hotel", "Hostel", "House")
                                         .setValue("Shelter"),
@@ -60,7 +60,7 @@ public class EntryWizardModel extends AbstractWizardModel {
 //                                        .setChoices("Tomatoes", "Lettuce", "Onions", "Pickles",
 //                                                "Cucumbers", "Peppers"),
 
-                                new SingleFixedChoicePage(this, "Display in Journal", JournalContract.JournalEntry.DISPLAY_IN_JOURNAL)
+                                new DisplayJournalPage(this, "Display in Journal", JournalContract.JournalEntry.DISPLAY_IN_JOURNAL)
                                         .setChoices("Yes", "No")
                                         .setValue("Yes"),
 

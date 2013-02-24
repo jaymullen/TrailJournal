@@ -183,7 +183,6 @@ public class LocationFragment extends Fragment {
 
         @Override
         public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
-            Log.d("AutoComplete", "constraint: " + constraint);
 
             final String[] projection = Locations.PROJECTION;
             final StringBuilder buffer = new StringBuilder();

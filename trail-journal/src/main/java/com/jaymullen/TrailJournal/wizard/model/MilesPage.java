@@ -32,15 +32,11 @@ public class MilesPage extends Page {
     /* This may be a strange name but it corresponds to form fields on the site.  DO NOT CHANGE */
     public static final String MILES_DATA_KEY = JournalContract.JournalEntry.MILES;
 
-    private String mTitle;
-
     public MilesPage(ModelCallbacks callbacks, String title) {
         super(callbacks, title);
-        mTitle = title;
     }
 
     public void setValue(String title){
-        mTitle = title;
         mData.putString(MILES_DATA_KEY, title);
 
     }
@@ -51,7 +47,7 @@ public class MilesPage extends Page {
 
     @Override
     public void getReviewItems(ArrayList<ReviewItem> dest) {
-        dest.add(new ReviewItem(mTitle, mData.getString(MILES_DATA_KEY), getKey(), -1));
+        dest.add(new ReviewItem("Daily Miles", mData.getString(MILES_DATA_KEY), getKey(), -1));
     }
 
     @Override
