@@ -25,12 +25,19 @@ public class JournalDatabase extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 5;
 
     interface Tables {
+        String JOURNALS = "journals";
         String JOURNAL_ENTRIES = "journal_entries";
         String LOCATIONS = "locations";
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+
+        db.execSQL("CREATE TABLE " + Tables.JOURNALS + " ("
+                + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + JournalColumns.JOURNAL_ID + " TEXT,"
+                + JournalColumns.NAME + " TEXT,"
+                + "UNIQUE (" + JournalColumns.JOURNAL_ID + ") ON CONFLICT REPLACE)");
 
         db.execSQL("CREATE TABLE " + Tables.JOURNAL_ENTRIES + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"

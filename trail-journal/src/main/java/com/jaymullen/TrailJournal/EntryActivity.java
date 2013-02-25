@@ -39,6 +39,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.jaymullen.TrailJournal.core.Auth;
+import com.jaymullen.TrailJournal.core.SubmitTrailEntryTask;
 import com.jaymullen.TrailJournal.core.Utils;
 import com.jaymullen.TrailJournal.wizard.EntryWizardModel;
 import com.jaymullen.TrailJournal.wizard.model.*;
@@ -82,6 +83,14 @@ public class EntryActivity extends SherlockFragmentActivity implements
         @Override
         public void onClick(DialogInterface dialog, int which) {
             publishEntry();
+        }
+    };
+
+    private DialogInterface.OnClickListener mLoginListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            Intent intent = new Intent(EntryActivity.this, LoginActivity.class);
+            startActivity(intent);
         }
     };
 
@@ -168,17 +177,32 @@ public class EntryActivity extends SherlockFragmentActivity implements
             @Override
             public void onClick(View view) {
                 if (mPager.getCurrentItem() == mCurrentPageSequence.size()) {
-                    DialogFragment dg = new DialogFragment() {
-                        @Override
-                        public Dialog onCreateDialog(Bundle savedInstanceState) {
-                            return new AlertDialog.Builder(getActivity())
-                                    .setMessage(R.string.submit_confirm_message)
-                                    .setPositiveButton(R.string.submit_confirm_button, mPublishListener)
-                                    .setNegativeButton(android.R.string.cancel, null)
-                                    .create();
-                        }
-                    };
-                    dg.show(getSupportFragmentManager(), "place_order_dialog");
+
+                    if(Auth.getInstance(EntryActivity.this).isLoggedIn()){
+                        DialogFragment dg = new DialogFragment() {
+                            @Override
+                            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                                return new AlertDialog.Builder(getActivity())
+                                        .setMessage(R.string.submit_confirm_message)
+                                        .setPositiveButton(R.string.submit_confirm_button, mPublishListener)
+                                        .setNegativeButton(android.R.string.cancel, null)
+                                        .create();
+                            }
+                        };
+                        dg.show(getSupportFragmentManager(), "publish_entry_dialog");
+                    } else {
+                        DialogFragment dg = new DialogFragment() {
+                            @Override
+                            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                                return new AlertDialog.Builder(getActivity())
+                                        .setMessage(R.string.login_required_login)
+                                        .setPositiveButton(R.string.login_confirm_button, mLoginListener)
+                                        .setNegativeButton(android.R.string.cancel, null)
+                                        .create();
+                            }
+                        };
+                        dg.show(getSupportFragmentManager(), "publish_entry_dialog");
+                    }
                 } else {
                     if (mEditingAfterReview) {
                         mPager.setCurrentItem(mPagerAdapter.getCount() - 1);
@@ -199,7 +223,7 @@ public class EntryActivity extends SherlockFragmentActivity implements
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: implement
+                saveEntry();
             }
         });
 
@@ -283,6 +307,13 @@ public class EntryActivity extends SherlockFragmentActivity implements
         getContentResolver().update(mEntryUri, cv, null, null);
     }
 
+    private boolean publishEntry(){
+        saveEntry();
+
+        new SubmitTrailEntryTask(this, "Publishing...").execute(mEntryUri);
+        return false;
+    }
+
     private long getTimestamp(String dateString){
 
         try{
@@ -296,11 +327,7 @@ public class EntryActivity extends SherlockFragmentActivity implements
             return 0;
         }
     }
-    private boolean publishEntry(){
 
-
-        return false;
-    }
     private void updateBottomBar() {
         int position = mPager.getCurrentItem();
         if (position == mCurrentPageSequence.size()) {
@@ -324,6 +351,7 @@ public class EntryActivity extends SherlockFragmentActivity implements
             getTheme().resolveAttribute(android.R.attr.textAppearanceMedium, v, true);
             mNextButton.setTextAppearance(this, v.resourceId);
             mNextButton.setEnabled(position != mPagerAdapter.getCutOffPage());
+            mNextButton.setClickable(true);
 
             mSaveButton.setVisibility(View.GONE);
         }

@@ -1,6 +1,7 @@
 package com.jaymullen.TrailJournal;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,13 +9,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import com.jaymullen.TrailJournal.core.Auth;
 import com.jaymullen.TrailJournal.core.Utils;
+import com.jaymullen.TrailJournal.provider.JournalContract.*;
 import com.jaymullen.TrailJournal.ui.dialog.ProgressDialogTask;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
+import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -46,6 +46,7 @@ public class LoginActivity extends Activity {
     private EditText mUser;
     private CheckBox mRemember;
     private Button mLogin;
+    private TextView mErrorMessage;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +57,7 @@ public class LoginActivity extends Activity {
         mPass = (EditText)findViewById(R.id.password_text);
         mRemember = (CheckBox)findViewById(R.id.remember_check);
         mLogin = (Button) findViewById(R.id.login_btn);
+        mErrorMessage = (TextView) findViewById(R.id.login_error_message);
 
         mUser.setText("mullen.jm@gmail.com");
         mPass.setText("aip2Ohna");
@@ -66,14 +68,27 @@ public class LoginActivity extends Activity {
         });
     }
 
+    private void displayErrorMessage(){
+        mErrorMessage.setVisibility(View.VISIBLE);
+    }
 
-    public class LoginTask extends ProgressDialogTask<String, Void, Boolean> {
+    public class LoginTask extends ProgressDialogTask<String, Void, String> {
+
+        private static final String formAction = "<form action=\"welcome.cfm?";
+        private static final String trailId = "<input type=\"hidden\" name=\"id\" value=\"";
+        private static final String journalNamePattern = "<blockquote>Welcome <font color=\"navy\"><b></b></font><BR>";
+        private static final String journalNamePrefix = "<font color=\"navy\"><b>";
+
+        private static final String ERROR = "error";
+        private static final String SUCCESS = "success";
+        private static final String MULTIPLE_JOURNALS = "multiple";
+
         public LoginTask(Context context) {
             super(context, "Authenticating...");
         }
 
         @Override
-        protected Boolean doInBackground(String... params) {
+        protected String doInBackground(String... params) {
             String user;
             String pass;
 
@@ -81,7 +96,7 @@ public class LoginActivity extends Activity {
                 user = params[0];
                 pass = params[1];
             } else {
-                return false;
+                return ERROR;
             }
 
             HttpParams httpParams = new BasicHttpParams();
@@ -107,7 +122,13 @@ public class LoginActivity extends Activity {
                 // Execute HTTP Post Request
                 HttpResponse response = httpclient.execute(httppost);
 
-                Log.d("LOGIN", "response: " + response);
+                //This is to check for auth failure... i know...
+                if(response.getStatusLine().getStatusCode() == 302 && response.getFirstHeader("Location").getValue().equals("http://www.trailjournals.com/login.cfm?message=3")){
+                    Log.d("Submit", "Error Will Robinson");
+                    return ERROR;
+                }
+
+                Log.d("Submit", "response: " + response);
                 Auth auth = Auth.getInstance(mContext);
                 for(Header header : response.getAllHeaders()){
                     if(header.getName().equals("Set-Cookie")){
@@ -123,7 +144,51 @@ public class LoginActivity extends Activity {
                     }
                 }
 
-                //Now we need to grab the index page so we can scrape out the journal id
+                if(response.getStatusLine().getStatusCode() == 200){
+                    InputStream instream = response.getEntity().getContent();
+                    String html= convertStreamToString(instream);
+
+                    if(html.contains("Choose One of Your Accounts to Edit")){
+                        Log.d("Submit", "found multiple accounts");
+
+                        int startIndex = html.indexOf(formAction);
+                        int startName = html.indexOf(journalNamePattern);
+                        String journalId = "";
+                        if(startIndex == -1)
+                            return ERROR;
+
+                        while(startIndex != -1){
+                            int idStart = html.indexOf(trailId, startIndex) + trailId.length();
+                            int idEnd  = html.indexOf("\"", idStart);
+
+                            int nameSectionStart = html.indexOf(journalNamePattern, startName) + journalNamePattern.length();
+                            int nameStart = html.indexOf(journalNamePrefix, nameSectionStart) + journalNamePrefix.length();
+                            int nameEnd = html.indexOf("</b></font>", nameStart);
+                            //Maybe this should be trail id?
+                            journalId = html.substring(idStart, idEnd);
+                            String journalName = html.substring(nameStart, nameEnd);
+
+                            Log.d("Submit", "journal id: " + journalId + " name: " + journalName);
+                            ContentValues cv = new ContentValues();
+                            cv.put(Journal.NAME, journalName);
+                            cv.put(Journal.JOURNAL_ID, journalId);
+
+                            getContentResolver().insert(Journal.CONTENT_URI, cv);
+
+                            startName = html.indexOf(journalNamePattern, startName+journalNamePattern.length());
+                            startIndex = html.indexOf(formAction, startIndex+formAction.length());
+                        }
+
+                        auth.setJournalId(journalId);
+                        return MULTIPLE_JOURNALS;
+                    }
+                    else if(html.contains("error")){
+                        return ERROR;
+                    }
+
+                }
+
+                //We did not find multiple accounts so grab the index page to scrape the journal id
                 String url2 = "http://www.trailjournals.com/login/welcome.cfm?" + auth.getCfid() + "&" + auth.getCftoken();
                 HttpGet httpget = Utils.getGet(url2);
 
@@ -141,16 +206,27 @@ public class LoginActivity extends Activity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return true;
+            return SUCCESS;
         }
 
+        @Override
+        protected void onPostExecute(String action) {
+            super.onPostExecute(action);
+
+            if(action.equals(SUCCESS) || action.equals(MULTIPLE_JOURNALS)){
+                finish();
+            } else if(action.equals(ERROR)) {
+                displayErrorMessage();
+            }
+        }
+
+        /*
+         * To convert the InputStream to String we use the BufferedReader.readLine()
+         * method. We iterate until the BufferedReader return null which means
+         * there's no more data to read. Each line will appended to a StringBuilder
+         * and returned as String.
+         */
         private String convertStreamToString(InputStream is) {
-    /*
-     * To convert the InputStream to String we use the BufferedReader.readLine()
-     * method. We iterate until the BufferedReader return null which means
-     * there's no more data to read. Each line will appended to a StringBuilder
-     * and returned as String.
-     */
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             StringBuilder sb = new StringBuilder();
 
@@ -169,12 +245,6 @@ public class LoginActivity extends Activity {
                 }
             }
             return sb.toString();
-        }
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-
-            finish();
         }
 
         private String getJournalId(String html){

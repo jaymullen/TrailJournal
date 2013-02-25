@@ -27,7 +27,7 @@ public class EntryWizardModel extends AbstractWizardModel {
 
     @Override
     protected PageList onNewRootPageList() {
-        return new PageList(
+         return new PageList(
                 new BranchPage(this, "Post type", JournalContract.JournalEntry.TYPE)
                         .addBranch("Prep",
                                 new DatePage(this, "Entry Date"),
@@ -64,7 +64,8 @@ public class EntryWizardModel extends AbstractWizardModel {
                                         .setChoices("Yes", "No")
                                         .setValue("Yes"),
 
-                                new BodyPage(this, "Entry Text"))
+                                new BodyPage(this, "Entry Text")
+                            ).setValue("Trail")
                         );
     }
 }

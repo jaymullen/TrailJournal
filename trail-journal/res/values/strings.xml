@@ -14,6 +14,7 @@
 
     <string name="add_post">Add Entry</string>
     <string name="login">Login</string>
+    <string name="login_error_message">There was an error logging in.  Please check your username and password and try again.</string>
     <string name="logout">Logout</string>
     <string name="remember_me">Rember Me Please</string>
 
@@ -38,7 +39,9 @@
     <string name="hint_start">e.g. Springer</string>
     <string name="hint_end">Kathadin</string>
 
-    <string name="submit_confirm_message">Place the order with the deli? You will receive an email
-        confirmation.</string>
-    <string name="submit_confirm_button">Place order</string>
+    <string name="login_required_login">Please login before publishing</string>
+    <string name="login_confirm_button">Login</string>
+
+    <string name="submit_confirm_message">Publish Entry to TrailJournals.com?</string>
+    <string name="submit_confirm_button">Publish</string>
 </resources>

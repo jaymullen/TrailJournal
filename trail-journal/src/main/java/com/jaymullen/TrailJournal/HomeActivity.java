@@ -15,7 +15,10 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import com.actionbarsherlock.app.ActionBar;
 import com.jaymullen.TrailJournal.core.Auth;
+import com.jaymullen.TrailJournal.provider.JournalContract;
+import com.jaymullen.TrailJournal.provider.JournalContract.*;
 import com.jaymullen.TrailJournal.provider.JournalContract.JournalEntry;
 
 /**
@@ -38,7 +41,45 @@ public class HomeActivity extends BaseActivity
 
         setContentView(R.layout.main);
 
-        getSupportActionBar().setTitle("Entries");
+        ActionBar ab = getSupportActionBar();
+
+        Cursor c = getContentResolver().query(Journal.CONTENT_URI, Journals.PROJECTION, null, null, Journal.DEFAULT_SORT);
+
+        if(c.moveToFirst()){
+            ab.setDisplayShowTitleEnabled(false);
+            ab.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+            final CursorAdapter ca = new CursorAdapter(this, c, false) {
+                @Override
+                public View newView(Context context, Cursor cursor, ViewGroup parent) {
+                    return getLayoutInflater().inflate(R.layout.list_item_spinner, null, false);
+                }
+
+                @Override
+                public void bindView(View view, Context context, Cursor cursor) {
+                    TextView tv = (TextView)view.findViewById(R.id.journal_title);
+                    tv.setText(cursor.getString(Journals.NAME));
+                }
+            };
+
+            ab.setListNavigationCallbacks(ca, new ActionBar.OnNavigationListener() {
+                @Override
+                public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+                    Cursor c = (Cursor)ca.getItem(itemPosition);
+                    if(c.moveToFirst()){
+                        Log.d("Submit", "journal id: " + c.getString(Journals.JOURNAL_ID));
+                        mAuth.setJournalId(c.getString(Journals.JOURNAL_ID));
+                    } else {
+                        Log.d("Submit", "cursor was empty");
+                    }
+
+                    return false;
+                }
+            });
+
+        } else {
+            ab.setTitle("Entries");
+        }
+
 
         mEntryList = (ListView)findViewById(R.id.list_entries);
 
@@ -143,11 +184,16 @@ public class HomeActivity extends BaseActivity
             TextView startLabel = (TextView)view.findViewById(R.id.entry_location_start_label);
             TextView endLabel = (TextView)view.findViewById(R.id.entry_location_end_label);
             ImageView contextArrow = (ImageView)view.findViewById(R.id.entry_options);
+            ImageView publishIndicator = (ImageView) view.findViewById(R.id.publish_status);
 
-            String type = cursor.getString(Entries.TYPE);
+            int publishStatus = cursor.getInt(Entries.IS_PUBLISHED);
+            if(publishStatus == JournalEntry.PUBLISHED){
+                publishIndicator.setEnabled(true);
+            }
 
             date.setText(cursor.getString(Entries.DATE));
 
+            String type = cursor.getString(Entries.TYPE);
             if(type != null){
                 Log.d("Adapter", "Type: " + type);
                 if(type.equals(JournalEntry.TYPE_PREP)){
@@ -182,6 +228,20 @@ public class HomeActivity extends BaseActivity
             bindView(v, context, cursor);
             return v;
         }
+    }
+
+    public interface Journals{
+        int TOKEN = 0x7;
+
+        String[] PROJECTION = {
+                Journal._ID,
+                Journal.NAME,
+                Journal.JOURNAL_ID
+        };
+
+        int ID = 0;
+        int NAME = 1;
+        int JOURNAL_ID = 2;
     }
 
     public interface Entries{

@@ -32,6 +32,9 @@ public class JournalProvider extends ContentProvider {
     private static final int LOCATION = 201;
     private static final int LOCATION_ITEM = 202;
 
+    private static final int JOURNAL = 301;
+    private static final int JOURNAL_ITEM = 302;
+
     /**
      * Build and return a {@link UriMatcher} that catches all {@link Uri}
      * variations supported by this {@link ContentProvider}.
@@ -39,6 +42,9 @@ public class JournalProvider extends ContentProvider {
     private static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = JournalContract.CONTENT_AUTHORITY;
+
+        matcher.addURI(authority, "journal", JOURNAL);
+        matcher.addURI(authority, "journal/*", JOURNAL_ITEM);
 
         matcher.addURI(authority, "journal_entry", JOURNAL_ENTRY);
         matcher.addURI(authority, "journal_entry/*", JOURNAL_ENTRY_ITEM);
@@ -54,6 +60,10 @@ public class JournalProvider extends ContentProvider {
     public String getType(Uri uri) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
+            case JOURNAL :
+                return Journal.CONTENT_TYPE;
+            case JOURNAL_ITEM :
+                return Journal.CONTENT_ITEM_TYPE;
             case JOURNAL_ENTRY:
                 return JournalEntry.CONTENT_TYPE;
             case JOURNAL_ENTRY_ITEM:
@@ -131,6 +141,12 @@ public class JournalProvider extends ContentProvider {
         // boolean syncToNetwork =
         // !SyncContract.hasCallerIsSyncAdapterParameter(uri);
         switch (match) {
+            case JOURNAL : {
+                long id = db.insertOrThrow(Tables.JOURNALS, null, values);
+                getContext().getContentResolver().notifyChange(uri, null, false);
+                Uri itemUri = JournalEntry.buildJournalUri(String.valueOf(id));
+                return itemUri;
+            }
             case JOURNAL_ENTRY: {
                 long id = db.insertOrThrow(Tables.JOURNAL_ENTRIES, null, values);
                 getContext().getContentResolver().notifyChange(uri, null, false);
@@ -218,6 +234,14 @@ public class JournalProvider extends ContentProvider {
             }
             case LOCATION : {
                 return builder.table(Tables.LOCATIONS);
+            }
+            case JOURNAL : {
+                return builder.table(Tables.JOURNALS);
+            }
+            case JOURNAL_ITEM: {
+                final String key = JournalEntry.getKey(uri);
+                return builder.table(Tables.JOURNALS).where(
+                        JournalEntry._ID + "=?", key);
             }
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

@@ -12,6 +12,11 @@ import android.provider.BaseColumns;
  */
 public class JournalContract {
 
+    interface JournalColumns {
+        String JOURNAL_ID = "journalId";
+        String NAME = "journalName";
+    }
+
     interface JournalEntryColumns {
         String TYPE = "type";
         String DATE = "date";
@@ -38,6 +43,27 @@ public class JournalContract {
 
     private static final String PATH_JOURNAL_ENTRIES = "journal_entry";
     private static final String PATH_LOCATION = "location";
+    private static final String PATH_JOURNAL = "journal";
+
+    public static class Journal implements JournalColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_JOURNAL).build();
+
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.trail_journal.journal";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.trail_journal.journal";
+
+        public static String getKey(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        /** Default "ORDER BY" clause. */
+        public static final String DEFAULT_SORT = JournalColumns.JOURNAL_ID + " DESC";
+
+        /** Build {@link Uri} for requested {@link #_ID}. */
+        public static Uri buildJournalUri(String key) {
+            return CONTENT_URI.buildUpon().appendPath(key).build();
+        }
+    }
 
     public static class JournalEntry implements JournalEntryColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
@@ -70,8 +96,8 @@ public class JournalContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PATH_LOCATION).build();
 
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.location.entry";
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.location.entry";
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.trail_journal.location";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.trail_journal.location";
 
         public static String getKey(Uri uri) {
             return uri.getPathSegments().get(1);
