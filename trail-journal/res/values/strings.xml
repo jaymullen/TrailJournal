@@ -11,6 +11,7 @@
 
     <string name="edit_entry">Edit Entry</string>
     <string name="delete_entry">Delete Entry</string>
+    <string name="view_entries">View Entries</string>
 
     <string name="add_post">Add Entry</string>
     <string name="login">Login</string>
@@ -37,7 +38,7 @@
     <string name="label_your_name">Name</string>
     <string name="label_your_email">Email</string>
     <string name="hint_start">e.g. Springer</string>
-    <string name="hint_end">Kathadin</string>
+    <string name="hint_end">Katahdin</string>
 
     <string name="login_required_login">Please login before publishing</string>
     <string name="login_confirm_button">Login</string>

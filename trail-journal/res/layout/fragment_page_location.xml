@@ -45,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:saveEnabled="false"
-                android:inputType="textEmailAddress"
+                android:inputType="textCapWords"
                 android:hint="@string/hint_end" />
 
         </LinearLayout>

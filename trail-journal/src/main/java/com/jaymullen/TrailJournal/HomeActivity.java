@@ -2,6 +2,7 @@ package com.jaymullen.TrailJournal;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,9 +33,12 @@ public class HomeActivity extends BaseActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int LOADER_ID = 0x02;
+    private SharedPreferences mPrefs;
+    private static final String ACTIVE_ADAPTER_KEY = "activeAdapter";
     private ListView mEntryList;
     private Auth mAuth;
     private CursorAdapter mAdapter;
+    private String mActiveJournalId;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,11 +47,20 @@ public class HomeActivity extends BaseActivity
 
         ActionBar ab = getSupportActionBar();
 
+        mPrefs = getPreferences(MODE_PRIVATE);
+
+        if(savedInstanceState != null){
+            mActiveJournalId = savedInstanceState.getString(ACTIVE_ADAPTER_KEY);
+        } else {
+            mActiveJournalId = mPrefs.getString(ACTIVE_ADAPTER_KEY, null);
+        }
+
         Cursor c = getContentResolver().query(Journal.CONTENT_URI, Journals.PROJECTION, null, null, Journal.DEFAULT_SORT);
 
         if(c.moveToFirst()){
             ab.setDisplayShowTitleEnabled(false);
             ab.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
             final CursorAdapter ca = new CursorAdapter(this, c, false) {
                 @Override
                 public View newView(Context context, Cursor cursor, ViewGroup parent) {
@@ -64,13 +77,19 @@ public class HomeActivity extends BaseActivity
             ab.setListNavigationCallbacks(ca, new ActionBar.OnNavigationListener() {
                 @Override
                 public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-                    Cursor c = (Cursor)ca.getItem(itemPosition);
-                    if(c.moveToFirst()){
-                        Log.d("Submit", "journal id: " + c.getString(Journals.JOURNAL_ID));
-                        mAuth.setJournalId(c.getString(Journals.JOURNAL_ID));
+                    Cursor activeJournal = (Cursor)ca.getItem(itemPosition);
+                    if(activeJournal != null){
+
+                        mActiveJournalId = activeJournal.getString(Journals.JOURNAL_ID);
+                        mAuth.setJournalId(mActiveJournalId);
+                        mPrefs.edit().putString(ACTIVE_ADAPTER_KEY, mActiveJournalId).commit();
+
+                        Log.d("Submit", "setListNavigationCallbacks() active journal: " + mActiveJournalId + " for item at: " + itemPosition + " itemId: " + itemId);
+                        getSupportLoaderManager().restartLoader(LOADER_ID, null, HomeActivity.this);
                     } else {
                         Log.d("Submit", "cursor was empty");
                     }
+                    //activeJournal.close();
 
                     return false;
                 }
@@ -102,26 +121,46 @@ public class HomeActivity extends BaseActivity
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(ACTIVE_ADAPTER_KEY, mActiveJournalId);
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(
-                this,
-                JournalEntry.CONTENT_URI,
-                Entries.PROJECTION,
-                null,
-                null,
-                JournalEntry.DEFAULT_SORT
-        );
+        Log.d("Submit", "onCreateLoader()");
+        CursorLoader loader;
+        if(mActiveJournalId != null){
+            loader = new CursorLoader(
+                    this,
+                    JournalEntry.CONTENT_URI,
+                    Entries.PROJECTION,
+                    JournalEntry.JOURNAL_ID + "=?",
+                    new String[]{ mActiveJournalId },
+                    JournalEntry.DEFAULT_SORT
+            );
+        } else {
+            loader = new CursorLoader(
+                    this,
+                    JournalEntry.CONTENT_URI,
+                    Entries.PROJECTION,
+                    null,
+                    null,
+                    JournalEntry.DEFAULT_SORT
+            );
+        }
+        return loader;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
+        Log.d("Submit", "onLoadFinished()");
         mAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        Log.d("Submit", "onLoaderReset()");
     }
 
     @Override
@@ -141,6 +180,9 @@ public class HomeActivity extends BaseActivity
                 return true;
             case R.id.delete_post:
                 deleteEntry(info.position);
+                return true;
+            case R.id.view_entries:
+                viewEntries();
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -166,9 +208,32 @@ public class HomeActivity extends BaseActivity
                 null,
                 null);
     }
+
+    private void viewEntries(){
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.trailjournals.com/date.cfm?trailname=" + mActiveJournalId));
+        startActivity(browserIntent);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+
+        Cursor c = getContentResolver().query(Journal.CONTENT_URI, Journals.PROJECTION, null, null, Journal.DEFAULT_SORT);
+
+        if(c.moveToFirst()){
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
+            if(mActiveJournalId != null){
+                while(!c.isAfterLast()){
+                    if(c.getString(Journals.JOURNAL_ID).equals(mActiveJournalId)){
+                        getSupportActionBar().setSelectedNavigationItem(c.getPosition());
+                    }
+                    c.moveToNext();
+                }
+            }
+        }
+        c.close();
     }
 
     public class EntryCursorAdapter extends CursorAdapter {
@@ -189,13 +254,14 @@ public class HomeActivity extends BaseActivity
             int publishStatus = cursor.getInt(Entries.IS_PUBLISHED);
             if(publishStatus == JournalEntry.PUBLISHED){
                 publishIndicator.setEnabled(true);
+            } else {
+                publishIndicator.setEnabled(false);
             }
 
             date.setText(cursor.getString(Entries.DATE));
 
             String type = cursor.getString(Entries.TYPE);
             if(type != null){
-                Log.d("Adapter", "Type: " + type);
                 if(type.equals(JournalEntry.TYPE_PREP)){
                     start.setText(cursor.getString(Entries.TITLE));
                     end.setVisibility(View.GONE);

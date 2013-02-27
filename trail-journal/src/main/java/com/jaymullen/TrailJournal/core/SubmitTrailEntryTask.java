@@ -1,5 +1,6 @@
 package com.jaymullen.TrailJournal.core;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -53,6 +54,7 @@ public class SubmitTrailEntryTask extends ProgressDialogTask<Uri, Void, Boolean>
         HttpClient httpClient = new DefaultHttpClient(httpParams);
 
         for(Uri entryUri : entryUris){
+            boolean success = false;
             Cursor c = mContext.getContentResolver().query(
                     entryUri,
                     Entries.PROJECTION,
@@ -64,10 +66,10 @@ public class SubmitTrailEntryTask extends ProgressDialogTask<Uri, Void, Boolean>
             if(c.moveToFirst()){
                 String type = c.getString(Entries.TYPE);
                 if(type.equals(JournalEntry.TYPE_PREP)){
-                    publishPrepEntry(httpClient, c);
+                    success = publishPrepEntry(httpClient, c);
                 }
                 else if(type.equals(JournalEntry.TYPE_TRAIL)){
-                    publishTrailEntry(httpClient, c);
+                    success = publishTrailEntry(httpClient, c);
                 }
 
                 c.close();
@@ -75,9 +77,15 @@ public class SubmitTrailEntryTask extends ProgressDialogTask<Uri, Void, Boolean>
                 c.close();
                 continue;
             }
+            //update entry publish status
+            if(success){
+                ContentValues cv = new ContentValues();
+                cv.put(JournalEntry.IS_PUBLISHED, 1);
+                mContext.getContentResolver().update(entryUri, cv, null, null);
+            }
         }
 
-        return null;
+        return true;
     }
 
     public boolean publishPrepEntry(HttpClient httpClient, Cursor c){
@@ -115,13 +123,21 @@ public class SubmitTrailEntryTask extends ProgressDialogTask<Uri, Void, Boolean>
             HttpResponse response = httpClient.execute(httppost);
 
             Log.d("Submit", "response: " + response.getStatusLine());
+            //our mesure of success is a 302 response with the correct location header
+            if(response.getStatusLine().getStatusCode() == 302
+                    && response.getFirstHeader("Location").getValue().contains("journal_list.cfm?")){
+                return true;
+            }
+
         } catch (ClientProtocolException e) {
             e.printStackTrace();
+            return false;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
 
-        return true;
+        return false;
     }
 
     public interface Entries{
