@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.internal.widget.IcsAdapterView;
 import com.jaymullen.TrailJournal.core.Auth;
 import com.jaymullen.TrailJournal.provider.JournalContract;
 import com.jaymullen.TrailJournal.provider.JournalContract.*;
@@ -128,7 +129,6 @@ public class HomeActivity extends BaseActivity
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.d("Submit", "onCreateLoader()");
         CursorLoader loader;
         if(mActiveJournalId != null){
             loader = new CursorLoader(
@@ -154,13 +154,12 @@ public class HomeActivity extends BaseActivity
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.d("Submit", "onLoadFinished()");
         mAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        Log.d("Submit", "onLoaderReset()");
+
     }
 
     @Override
@@ -169,6 +168,14 @@ public class HomeActivity extends BaseActivity
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.entry_context, menu);
+
+        AdapterView.AdapterContextMenuInfo adapterInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        Cursor c = (Cursor)mAdapter.getItem(adapterInfo.position);
+        boolean isPublished = c.getInt(Entries.IS_PUBLISHED) == 1;
+        if(!isPublished){
+            menu.removeItem(R.id.view_entry);
+        }
+
     }
 
     @Override
@@ -181,8 +188,9 @@ public class HomeActivity extends BaseActivity
             case R.id.delete_post:
                 deleteEntry(info.position);
                 return true;
-            case R.id.view_entries:
-                viewEntries();
+            case R.id.view_entry:
+                Cursor c = (Cursor)mAdapter.getItem(info.position);
+                viewEntry(c.getString(Entries.ENTRY_ID));
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -207,6 +215,11 @@ public class HomeActivity extends BaseActivity
                 entryToDelete,
                 null,
                 null);
+    }
+
+    private void viewEntry(String entryId){
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.trailjournals.com/entry.cfm?id=" + entryId));
+        startActivity(browserIntent);
     }
 
     private void viewEntries(){

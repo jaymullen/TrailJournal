@@ -11,7 +11,7 @@
 
     <string name="edit_entry">Edit Entry</string>
     <string name="delete_entry">Delete Entry</string>
-    <string name="view_entries">View Entries</string>
+    <string name="view_entry">View Entry</string>
 
     <string name="add_post">Add Entry</string>
     <string name="login">Login</string>

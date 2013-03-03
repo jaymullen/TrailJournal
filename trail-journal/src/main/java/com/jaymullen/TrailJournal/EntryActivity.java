@@ -66,6 +66,8 @@ public class EntryActivity extends SherlockFragmentActivity implements
 
     private boolean mEditingAfterReview;
 
+    private boolean mIsPublished;
+
     private AbstractWizardModel mWizardModel = new EntryWizardModel(this);
 
     private boolean mConsumePageSelectedEvent;
@@ -115,9 +117,12 @@ public class EntryActivity extends SherlockFragmentActivity implements
 
                 setPostType(c.getString(HomeActivity.Entries.TYPE));
 
+                mIsPublished = c.getInt(HomeActivity.Entries.IS_PUBLISHED) == 1;
+
                 setValuesOnPages(c);
             } else {
                 title = "New Entry";
+                mIsPublished = false;
             }
             c.close();
 
@@ -128,6 +133,8 @@ public class EntryActivity extends SherlockFragmentActivity implements
             cv.put(JournalEntry.JOURNAL_ID, Auth.getInstance(this).getJournalId());
             cv.put(JournalEntry.IS_PUBLISHED, 0);
             mEntryUri = getContentResolver().insert(JournalEntry.CONTENT_URI, cv);
+            getIntent().setData(mEntryUri);
+            mIsPublished = false;
         }
 
         getSupportActionBar().setTitle(title);
@@ -342,6 +349,9 @@ public class EntryActivity extends SherlockFragmentActivity implements
             }
 
             mSaveButton.setVisibility(View.VISIBLE);
+            if(mIsPublished){
+                mNextButton.setText("Update");
+            }
         } else {
             mNextButton.setText(mEditingAfterReview
                     ? R.string.review

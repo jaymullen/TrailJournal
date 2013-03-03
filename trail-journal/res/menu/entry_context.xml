@@ -10,7 +10,8 @@
           android:title="@string/delete_entry"
           android:showAsAction="always" />
 
-    <item android:id="@+id/view_entries"
-          android:title="@string/view_entries"
+    <item android:id="@+id/view_entry"
+          android:title="@string/view_entry"
           android:showAsAction="always" />
+
 </menu>
