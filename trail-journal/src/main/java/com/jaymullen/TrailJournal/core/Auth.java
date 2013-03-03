@@ -86,6 +86,11 @@ public class Auth {
     public String getTokenStringForUrl(){
         return mCfid + "&" + mCftoken;
     }
+
+    public String getCookieString(){
+        return "TJ.SETTINGS=1%2C0%2C0%2C0%2C0;" + mCfid + ";" + mCftoken;
+    }
+
     public String getCfid(){
         return mCfid;
     }

@@ -325,7 +325,8 @@ public class HomeActivity extends BaseActivity
                 JournalEntry.START_DEST,
                 JournalEntry.SLEEP_LOCATION,
                 JournalEntry.ENTRY_TEXT,
-                JournalEntry.MILES
+                JournalEntry.MILES,
+                JournalEntry.ENTRY_ID
         };
 
         int ID = 0;
@@ -340,6 +341,6 @@ public class HomeActivity extends BaseActivity
         int SLEEP_LOC = 9;
         int ENTRY_TEXT = 10;
         int MILES = 11;
-
+        int ENTRY_ID = 12;
     }
 }

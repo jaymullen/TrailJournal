@@ -317,11 +317,11 @@ public class EntryActivity extends SherlockFragmentActivity implements
     private long getTimestamp(String dateString){
 
         try{
-            DateFormat formatter ;
-            Date date ;
+            DateFormat formatter;
+            Date date;
             formatter = new SimpleDateFormat("MM/dd/yyyy");
             date = (Date)formatter.parse(dateString);
-
+            Log.d("Time", "converted " + dateString + " to " + date.toString() + " in ms: " + date.getTime());
             return date.getTime();
         } catch (ParseException e){
             return 0;

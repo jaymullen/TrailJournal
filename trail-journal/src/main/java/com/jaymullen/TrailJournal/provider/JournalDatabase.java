@@ -37,22 +37,26 @@ public class JournalDatabase extends SQLiteOpenHelper {
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + JournalColumns.JOURNAL_ID + " TEXT,"
                 + JournalColumns.NAME + " TEXT,"
+                + JournalColumns.CID + " TEXT,"
+                + JournalColumns.TRAIL_ID + " TEXT,"
+                + JournalColumns.HITS + " TEXT,"
                 + "UNIQUE (" + JournalColumns.JOURNAL_ID + ") ON CONFLICT REPLACE)");
 
         db.execSQL("CREATE TABLE " + Tables.JOURNAL_ENTRIES + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + JournalEntryColumns.ENTRY_ID + " TEXT,"
                 + JournalEntryColumns.TYPE + " TEXT,"
                 + JournalEntryColumns.DATE + " TEXT,"
-                + JournalEntryColumns.TIMESTAMP + " INT,"
+                + JournalEntryColumns.TIMESTAMP + " INTEGER,"
                 + JournalEntryColumns.TITLE + " TEXT,"
                 + JournalEntryColumns.START_DEST + " TEXT,"
                 + JournalEntryColumns.END_DEST + " TEXT,"
                 + JournalEntryColumns.SLEEP_LOCATION + " TEXT,"
-                + JournalEntryColumns.MILES + " INT,"
+                + JournalEntryColumns.MILES + " INTEGER,"
                 + JournalEntryColumns.DISPLAY_IN_JOURNAL + " TEXT,"
                 + JournalEntryColumns.ENTRY_TEXT + " TEXT,"
-                + JournalEntryColumns.IS_PUBLISHED + " INT,"
-                + JournalEntryColumns.JOURNAL_ID + " INT)");
+                + JournalEntryColumns.IS_PUBLISHED + " INTEGER,"
+                + JournalEntryColumns.JOURNAL_ID + " INTEGER)");
 
         db.execSQL("CREATE TABLE " + Tables.LOCATIONS + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"

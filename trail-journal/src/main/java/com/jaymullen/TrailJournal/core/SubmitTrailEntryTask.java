@@ -13,6 +13,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -21,7 +22,11 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -48,7 +53,7 @@ public class SubmitTrailEntryTask extends ProgressDialogTask<Uri, Void, Boolean>
         mAuth = Auth.getInstance(mContext);
 
         HttpParams httpParams = new BasicHttpParams();
-        HttpClientParams.setRedirecting(httpParams, false);
+        HttpClientParams.setRedirecting(httpParams, true);
 
         // Create a new HttpClient and Post Header
         HttpClient httpClient = new DefaultHttpClient(httpParams);
@@ -66,38 +71,33 @@ public class SubmitTrailEntryTask extends ProgressDialogTask<Uri, Void, Boolean>
             if(c.moveToFirst()){
                 String type = c.getString(Entries.TYPE);
                 if(type.equals(JournalEntry.TYPE_PREP)){
-                    success = publishPrepEntry(httpClient, c);
+                    success = publishPrepEntry(httpClient, c, entryUri);
                 }
                 else if(type.equals(JournalEntry.TYPE_TRAIL)){
-                    success = publishTrailEntry(httpClient, c);
+                    success = publishTrailEntry(httpClient, c, entryUri);
                 }
-
-                c.close();
             } else {
                 c.close();
                 continue;
             }
-            //update entry publish status
-            if(success){
-                ContentValues cv = new ContentValues();
-                cv.put(JournalEntry.IS_PUBLISHED, 1);
-                mContext.getContentResolver().update(entryUri, cv, null, null);
-            }
+
+            c.close();
         }
 
         return true;
     }
 
-    public boolean publishPrepEntry(HttpClient httpClient, Cursor c){
+    public boolean publishPrepEntry(HttpClient httpClient, Cursor c, Uri entryUri){
           return false;
     }
 
-    public boolean publishTrailEntry(HttpClient httpClient, Cursor c){
-        String url = Auth.BASE_URL + "login/admin_RecordAction.cfm?" + mAuth.getTokenStringForUrl();
-        Log.d("Submit", "submitting trail entry to: " + url);
+    public boolean publishTrailEntry(HttpClient httpClient, Cursor c, Uri entryUri){
+        String publishUrl = Auth.BASE_URL + "login/admin_RecordAction.cfm?" + mAuth.getTokenStringForUrl();
+        Log.d("Submit", "submitting trail entry to: " + publishUrl);
 
         try {
             String display = c.getString(Entries.DISPLAY).equals("Yes") ? "1" : "0";
+
             // Add your data
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair("FieldList", "date_entry,Entry,photo_id,Destination,Miles,datecreated,type,sleeploc,display,startlocation,journalid"));
@@ -116,16 +116,56 @@ public class SubmitTrailEntryTask extends ProgressDialogTask<Uri, Void, Boolean>
             nameValuePairs.add(new BasicNameValuePair("texttype", "text"));
             nameValuePairs.add(new BasicNameValuePair("btnEdit_OK", "OK"));
 
-            HttpPost httppost = Utils.getPost(url);
+            HttpPost httppost = Utils.getPost(publishUrl);
+            httppost.setHeader("Cookie", mAuth.getCookieString());
+            httppost.setHeader("Referer", "http://www.trailjournals.com/login/journal_add.cfm?" + mAuth.getTokenStringForUrl());
+            httppost.setHeader("Connection", "");
             httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             // Execute HTTP Post Request
             HttpResponse response = httpClient.execute(httppost);
 
-            Log.d("Submit", "response: " + response.getStatusLine());
-            //our mesure of success is a 302 response with the correct location header
-            if(response.getStatusLine().getStatusCode() == 302
-                    && response.getFirstHeader("Location").getValue().contains("journal_list.cfm?")){
+            //our measure of success is a 302 response with the correct location header
+            if(response.getStatusLine().getStatusCode() == 200){
+                    InputStream instream = response.getEntity().getContent();
+                    String result = Utils.convertStreamToString(instream);
+                    instream.close();
+
+                HashMap<Integer, String> matches = new HashMap<Integer, String>();
+                Log.d("Submit", "result from: " + publishUrl + " html: " + result);
+                String recordHtml = "<a class=\"link\" href=\"journal_edit.cfm?recordid=";
+                String dateStartHtml = "<b>";
+                int startIndex = result.indexOf(recordHtml);
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+                String entryId = new String();
+
+                while(startIndex != -1){
+                    int start = result.indexOf(recordHtml, startIndex) + recordHtml.length();
+                    int end  = result.indexOf("&", start);
+
+                    int dateStart = result.indexOf(dateStartHtml, end) + dateStartHtml.length();
+                    int dateEnd = result.indexOf("<", dateStart);
+
+                    String id = result.substring(start, end);
+                    String date = result.substring(dateStart, dateEnd);
+
+                    String entryDate = sdf.format(new Date(c.getLong(Entries.TIMESTAMP)));
+
+                    Log.d("Submit", "start id: " + start + " end id " + end + " date start : " + dateStart + " date end: " + dateEnd);
+                    Log.d("Submit", "date from db: " + entryDate + " date from html: " + date + " entry id: " + id);
+
+                    if(date.equals(entryDate)){
+                        entryId = id;
+                    }
+                    startIndex = result.indexOf(recordHtml, startIndex+recordHtml.length());
+                }
+                //<a class="link" href="journal_edit.cfm?recordid=
+                //String entryId = getEntryIdFromDate(c.getString(Entries.DATE));
+                ContentValues cv = new ContentValues();
+                cv.put(JournalEntry.IS_PUBLISHED, 1);
+                cv.put(JournalEntry.ENTRY_ID, entryId);
+                mContext.getContentResolver().update(entryUri, cv, null, null);
+
                 return true;
             }
 

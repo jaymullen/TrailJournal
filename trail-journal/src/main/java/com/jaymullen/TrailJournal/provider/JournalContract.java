@@ -15,9 +15,13 @@ public class JournalContract {
     interface JournalColumns {
         String JOURNAL_ID = "journalId";
         String NAME = "journalName";
+        String TRAIL_ID = "trailId";
+        String HITS = "hits";
+        String CID = "cid";
     }
 
     interface JournalEntryColumns {
+        String ENTRY_ID = "entryId";
         String TYPE = "type";
         String DATE = "date";
         String TIMESTAMP = "timestamp";
